@@ -1,0 +1,9 @@
+# For IE .htc files (if used, optional)
+AddType text/x-component .htc
+
+# If we have a file or folder in public... show that.
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [L]
