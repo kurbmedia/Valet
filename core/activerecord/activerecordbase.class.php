@@ -1,9 +1,9 @@
 <?php
 
-abstract class ActiveRecordBase{
+abstract class ActiveRecordBase extends ActiveRecord{
 	
 	public static function find($id, $args){
-		return ActiveRecord::find(get_class($this), $id, $args);
+		return parent::find(__CLASS__, $id, $args);
 	}
 	
 }
