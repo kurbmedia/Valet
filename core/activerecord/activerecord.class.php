@@ -15,7 +15,7 @@ class ActiveRecord {
 
 	private $assoc_types = array('belongs_to', 'has_many', 'has_one');
 
- 	function __construct($params=null, $new_record=true, $is_modified=false) {
+ 	public function __construct($params=null, $new_record=true, $is_modified=false) {
 		
 		$this->table_name  = Inflector::tableize(get_class($this));
 		$this->columns	   = self::get_columns($this);
@@ -46,7 +46,7 @@ class ActiveRecord {
 		}
 	}
 
-	function __get($name) {
+	public function __get($name) {
 		
 		$name = Inflector::underscore($name);	// Add camelCase support.
 		
@@ -68,7 +68,7 @@ class ActiveRecord {
 		throw new ActiveRecordException("attribute called '$name' doesn't exist", ActiveRecordException::AttributeNotFound);
 	}
 
-	function __set($name, $value) {
+	public function __set($name, $value) {
 		if($this->frozen) throw new ActiveRecordException("Can not update $name as object is frozen.", ActiveRecordException::ObjectFrozen);
 
 		$name = Inflector::underscore($name); // Add camelCase support.
@@ -108,7 +108,7 @@ class ActiveRecord {
 	
 	*/
 
-	function __call($name, $args){
+	public function __call($name, $args){
 		list($assoc, $func) = explode("_", $name, 2);
 		if (array_key_exists($assoc, $this->associations)){
 	    	return $this->associations[$assoc]->$func($args, $this);
@@ -119,7 +119,7 @@ class ActiveRecord {
 
 	// Misc get functions.
 
-	function get_columns($item) { 
+	private function get_columns($item) { 
 		$props = get_object_vars($item);
 		
 		if(!isset($props['columns']) || empty($props['columns'])){
@@ -132,16 +132,16 @@ class ActiveRecord {
 		}
 	}
 	
-	function get_primary_key() { return $this->primary_key; }
-	function is_frozen() { return $this->frozen; }
-	function is_new_record() { return $this->new_record; }
-	function is_modified() { return $this->is_modified; }
-	function set_modified($val) { $this->is_modified = $val; }
+	private function get_primary_key() { return $this->primary_key; }
+	private function is_frozen() { return $this->frozen; }
+	private function is_new_record() { return $this->new_record; }
+	private function is_modified() { return $this->is_modified; }
+	private function set_modified($val) { $this->is_modified = $val; }
 	static function get_query_count() { return self::$query_count; }
 
 	// Database specific functions.
 
-	static function &get_dbh() {
+	private static function &get_dbh() {
 		if(!self::$dbh){
 			$db = Environment::getDB();
 			$db_mode = $db['driver'];
@@ -152,30 +152,39 @@ class ActiveRecord {
 		
 		return self::$dbh;
 	}
+	
+	private static function get_called_class(){
+		$bt = debug_backtrace(); 
+		    $lines = file($bt[1]['file']); 
+		    preg_match('/([a-zA-Z0-9\_]+)::'.$bt[1]['function'].'/', 
+		               $lines[$bt[1]['line']-1], 
+		               $matches); 
+		    return $matches[1];
+	}
 
-	static function query($query) {
+	public static function query($query) {
 		$dbh =& self::get_dbh();
 		#var_dump($query);
 		self::$query_count++;
 		return call_user_func_array(array(DB_ADAPTER."Adapter", __FUNCTION__),array($query, $dbh));
 	}
   
-	static function quote($string, $type = null){
+	private static function quote($string, $type = null){
 		$dbh =& self::get_dbh();
 		return call_user_func_array(array(DB_ADAPTER."Adapter", __FUNCTION__), array($string, $dbh, $type));
 	}
 
-	static function last_insert_id($resource = null){
+	public static function last_insert_id($resource = null){
 		$dbh =& self::get_dbh();
 		return call_user_func_array(array(DB_ADAPTER."Adapter", __FUNCTION__), array($dbh, $resource));
 	}
 
-	function update_attributes($attributes) {
+	public function update_attributes($attributes) {
 		foreach ($attributes as $key => $value)	$this->$key = $value;
 		//return $this->save();
 	}
 
-	function save() {
+	public function save() {
 		if(method_exists($this, 'before_save')) $this->before_save();
 		
 		$check = $this->validate();
@@ -255,7 +264,7 @@ class ActiveRecord {
 		if (method_exists($this, 'after_save')) $this->after_save();
 	}
 
-	function destroy() {
+	public function destroy() {
 		if (method_exists($this, 'before_destroy')) $this->before_destroy();
 		
 		foreach ($this->associations as $name => $assoc) $assoc->destroy($this);
@@ -275,7 +284,7 @@ class ActiveRecord {
 	    accepts: row from SQL query (array), lookup array of column names
 	    return: object keyed by table names and real columns names
 	*/
-	static function transform_row($row, $col_lookup) {
+	public static function transform_row($row, $col_lookup) {
 		$object = array();
 		foreach ($row as $col_name => $col_value){
 			/* set $object["table_name"]["column_name"] = $col_value */
@@ -284,7 +293,9 @@ class ActiveRecord {
 		return $object;
 	}
 
-	static function find($class, $id, $options=null) {
+	public static function find($id, $options=null) {
+
+		$class = (function_exists('get_called_class'))? get_called_class() : self::get_called_class();
 
 		$query = self::generate_find_query($class, $id, $options);
 		$rows = self::query($query['query']);
@@ -332,7 +343,7 @@ class ActiveRecord {
 		if (method_exists($this, 'on_load')) $this->on_load();
 	}
 
-	function generate_find_query($class_name, $id, $options=null) {
+	private function generate_find_query($class_name, $id, $options=null) {
 
 		//$dbh =& $this->get_dbh();
 		$item = new $class_name;

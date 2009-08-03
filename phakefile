@@ -1,0 +1,13 @@
+<?php 
+
+$root_path  = dirname(__FILE__);
+
+// Add all desired paths to the task paths array;
+
+$task_paths = array(
+	"tasks"
+	"scripts"
+	);
+
+
+?>
