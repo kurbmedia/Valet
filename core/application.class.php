@@ -78,7 +78,9 @@ class Application{
 	}
 	
 	function run(){
-	
+		require_once(APPLICATION_PATH."/controllers/index.php");
+		$ind = new indexController();
+		$ind->index('asda');
 	}
 	
 	
