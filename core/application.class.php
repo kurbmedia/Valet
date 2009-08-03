@@ -5,16 +5,18 @@ class Application{
 	function __construct(){
 
 		// Require core classes.
-		require_once(CORE_PATH.'controller.class.php');
-		require_once(CORE_PATH.'router.class.php');
-		require_once(CORE_PATH.'view.class.php');
-		require_once(CORE_PATH.'inflector.class.php');
-		require_once(CORE_PATH.'components/error.php');
-		require_once(CORE_PATH.'components/environment.php');
-		require_once(CORE_PATH.'components/cache.php');
+		require_once(CORE_PATH."/components/loader.php");
+		require_once(CORE_PATH.'/controller.class.php');
+		require_once(CORE_PATH.'/router.class.php');
+		require_once(CORE_PATH.'/view.class.php');
 		
-		// Requre helper classes
-		require_once(APPLICATION_PATH."controllers/controller_base.php");
+		Loader::load('components/inflector');
+		Loader::load('components/environment');
+		Loader::load('components/cache');
+		Loader::load('components/error');
+		Loader::load('components/configure');
+		Loader::load('controllers/controller_base');
+		
 		
 		// Handle errors
 		set_exception_handler(array('Error','handle'));
@@ -23,16 +25,12 @@ class Application{
 		ini_set('short_open_tag', true);
 		
 		
-		// Get config information
-		require_once(CORE_PATH.'configure.class.php');		
-		include_once(BASE_PATH.'config/config.php');
+		// Load Configuration
+		Configure::load();
 		
-		// Get environment information
-		include_once(BASE_PATH.'config/environments.php');
-		include_once(BASE_PATH.'config/routes.php');
-		
-		Configure::load($config);
-		Environment::set();
+		// Load Environment
+		Environment::load();
+
 		
 		// Handle errors
 		set_exception_handler(array('Error','handle'));
@@ -51,27 +49,26 @@ class Application{
 		
 		// Load enabled options
 		if(in_array('auth', $options)){	
-			require_once(CORE_PATH.'components/auth.php'); 
-			require_once(CORE_PATH.'components/flash.php');
+			Loader::load('components/auth'); 
+			Loader::load('components/flash');
 		}
 		
-		if(in_array('flash', $options))	require_once(CORE_PATH.'components/flash.php');
+		if(in_array('flash', $options))	Loader::load('components/flash');
 		
 		if(in_array('db', $options)){
 			
-			require_once(CORE_PATH.'activerecord/activerecord.class.php');
-			require_once(CORE_PATH.'activerecord/activerecordbase.class.php');
-			require_once(CORE_PATH.'activerecord/activerecordexception.class.php');
+			require_once(CORE_PATH.'/activerecord/activerecord.class.php');
+			require_once(CORE_PATH.'/activerecord/activerecordexception.class.php');
 			
 			$behaviors = array('association','belongsto','hasmany','hasone');
-			foreach($behaviors as $behavior) require_once(CORE_PATH.'activerecord/'.$behavior.".php");
+			foreach($behaviors as $behavior) require_once(CORE_PATH.'/activerecord/'.$behavior.".class.php");
 			
-			$db = Environment::$db;
+			$db = Configure::read('db_config');
 			$adapter = $db['adapter'];
 			define('DB_ADAPTER',$adapter);
 			
-			require_once CORE_PATH.'db_adapters/databaseadapter.php';
-			require_once CORE_PATH.'db_adapters/'.DB_ADAPTER.'.php';			
+			require_once CORE_PATH.'/db_adapters/databaseadapter.php';
+			require_once CORE_PATH.'/db_adapters/'.DB_ADAPTER.'.php';			
 		}		
 	}
 	

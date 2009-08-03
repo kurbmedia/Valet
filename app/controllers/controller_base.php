@@ -17,6 +17,8 @@ class ControllerBase extends Controller{
 			after_filter  : called during object __destruct (controllers are destructed immediately following their action calls)
 	*/
 	
+	function index(){}
+	
 	
 }
 

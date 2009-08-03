@@ -3,10 +3,10 @@
 
 abstract class Controller{
 	
-	private protected var $action_vars = array();
-	private protected var $controller_filters = array('before_filter' => array(), 'after_filter' => array(), 'around_filter' => array());
+	protected $action_vars = array();
+	protected $controller_filters = array('before_filter' => array(), 'after_filter' => array(), 'around_filter' => array());
 
-	abstract public function index($args){}
+	abstract public function index();
 	
 	private function render($file){
 		View::set_view($file);
