@@ -26,7 +26,13 @@ class Router{
 	 * @access private
 	 **/
 	private $_controller;
-
+	
+	/**
+	 * Stores arguments to be passed to the controller action.
+	 *
+	 * @var array
+	 **/
+	private $_args;
 
 	/**
 	 * Process the incoming request url.
@@ -35,12 +41,97 @@ class Router{
 	 **/
 	public function process_request(){
 		
+		$this->_namespace = array();
+		
+		$route = $_SERVER['REQUEST_URI'];
+		
+		$all = explode('/',$route);
+		$env = explode('/',Configure::read('base_path'));
+	
+		$result = array_diff($all,$env);
+		$route = implode("/",$result);
+		
+		$route = trim($route, '/\\');	
+		
+		// Check against user created routes
+		if($this->_process_routes($route)){
+			$this->_connect();
+			return null;
+		}
+		
+		// Get separate parts
+		$parts = explode('/', $route);
+		
+		$cmd_path  = APPLICATION_PATH."/controllers/";
+	
+		foreach ($parts as $part) {
+			$fullpath = $cmd_path . $part;
+			
+			// Check for directory
+			if(is_dir($fullpath)){
+				$cmd_path .= $part . "/";
+				$this->_namespace[] = $part;
+				array_shift($parts);
+				continue;
+			}
+
+			// Find the file
+			if (is_file($fullpath . '.php')) {
+				$this->_controller = $part;
+				array_shift($parts);
+				break;
+			}
+			
+		}
+
+		if(empty($this->_controller)){
+			$this->_controller = "index";
+		}
+		
+		// Get action
+		$action = array_shift($parts);
+		if(empty($action)) $action = 'index';
+
+		$this->_action 	  = $action;
+		$this->_args   	  = $parts;
+		$this->_connect();
+		
 	}
 	
-	public function connect(){
+	/**
+	 * Connect to controller and run action.
+	 *
+	 * @return void
+	 * @access private
+	 **/
+	private function _connect(){
 		
+		Configure::write('current_controller', $this->_controller);
+		Configure::write('current_action', $this->_action);
 		
+		$file_name = strtolower($this->_controller);
+		Loader::load('controllers/'.implode("/", $this->_namespace)."/".$file_name);
+
+		$class_name = Inflector::camelize($this->_controller)."Controller";
+		$class = new $class_name();
+		$class->build_controller();
 		
+		$action = $this->_action;
+		$class->$action($this->_args);
+		
+		$class->destroy_controller();
+		
+	}
+	
+	
+	/**
+	 * Process user created routes
+	 *
+	 * @return boolean
+	 * @access private
+	 **/
+	function _process_routes(){
+		return false;
 	}
 	
 }

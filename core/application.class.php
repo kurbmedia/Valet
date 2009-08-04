@@ -2,7 +2,13 @@
 
 class Application{
 	
-	function __construct(){
+	/**
+	 * Gather all necessary environment files.
+	 *
+	 * @return void
+	 * @access public
+	 **/
+	public function __construct(){
 
 		// Require core classes.
 		require_once(CORE_PATH."/components/loader.php");
@@ -43,8 +49,13 @@ class Application{
 		
 	}
 	
-	
-	function enable($options){
+	/**
+	 * Allows enabling of certain Application functionality.
+	 *
+	 * @return void
+	 * @access public
+	 **/
+	public function enable($options){
 		$options = explode(",", $options);
 		
 		// Load enabled options
@@ -72,19 +83,26 @@ class Application{
 		}		
 	}
 	
-	function redirect($uri){
+	/**
+	 * Passthrough function to redirect to location. Exits application.
+	 *
+	 * @return void
+	 * @access public
+	 **/
+	public static function redirect($uri){
 		header("Location:$uri");
 		exit();
 	}
 	
-	function run(){
-		require_once(APPLICATION_PATH."/controllers/index.php");
-		Auth::validate($_SERVER['REQUEST_URI']);
-		Configure::write('current_action', 'index');
-		$ind = new indexController();
-		$ind->build_controller();
-		$ind->index('asda');
-		$ind->destroy_controller();
+	/**
+	 * Route and run Application
+	 *
+	 * @return void
+	 * @access public
+	 **/
+	public function run(){
+		$router = new Router();
+		$router->process_request();
 	}
 	
 	
