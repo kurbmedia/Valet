@@ -2,7 +2,7 @@
 
 class indexController extends ControllerBase{
 	
-	public $before_filter = "dothis";
+//	public $before_filter = "";
 	
 	function index($args){
 

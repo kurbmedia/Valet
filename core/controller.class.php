@@ -18,7 +18,7 @@ abstract class Controller{
 	 * @var mixed
 	 * @access protected
 	 **/
-	protected $before_filter;
+	protected $before_filter = "";
 	
 	/**
 	 * Functions to be called before processing of actions, and then again after processing of actions.
@@ -26,7 +26,7 @@ abstract class Controller{
 	 * @var mixed
 	 * @access protected
 	 **/
-	protected $around_filter;
+	protected $around_filter = "";
 	
 	/**
 	 * Functions to be called after processing of actions.
@@ -34,7 +34,7 @@ abstract class Controller{
 	 * @var mixed
 	 * @access protected
 	 **/
-	protected $after_filter;
+	protected $after_filter = "";
 	
 	/**
 	 * The current server request type. In this instance GET, POST, or XHR (Ajax requests)
@@ -103,11 +103,9 @@ abstract class Controller{
 			$this->request = (isset($_POST) && !empty($_POST))? "post" : "get";
 		}
 		
-		$this->before_filter = (!is_array($this->before_filter))? array($this->before_filter) : $this->before_filter;
-		foreach($this->before_filter as $filter) call_user_func(array($this, $filter));
-
-		$this->around_filter = (!is_array($this->around_filter))? array($this->around_filter) : $this->around_filter;
-		foreach($this->around_filter as $filter) call_user_func(array($this, $filter));
+	
+		$this->_process_filters( array_merge((array)$this->before_filter, (array)$this->around_filter) );		
+		
 	}
 	
 	/**
@@ -117,12 +115,52 @@ abstract class Controller{
 	 * @access protected	
 	 **/
 	public final function destroy_controller(){
-
-		$this->around_filter = (!is_array($this->around_filter))? array($this->around_filter) : $this->around_filter;
-		foreach($this->around_filter as $filter) call_user_func(array($this, $filter));
+		$this->_process_filters( array_merge((array)$this->around_filter, (array)$this->after_filter) );		
+	}
 	
-		$this->after_filter = (!is_array($this->after_filter))? array($this->after_filter) : $this->after_filter;
-		foreach($this->after_filter as $filter) call_user_func(array($this, $filter));
+	
+	/**
+	 * Process controller filters.
+	 *
+	 * @return void
+	 **/
+	private final function _process_filters($filters){
+				
+		foreach($filters as $filter){
+			
+			if(empty($filter)) continue;
+			
+			if(is_array($filter)){
+				
+				$action = $filter[0];
+				
+				// Check if we are only supposed to run this filter on this current action.
+				
+				if(isset($filter['only'])){
+					if(is_array($filter['only'])){
+						if(in_array($filter['only'], Configure::read('current_action'))) continue;
+					}else{
+						if($filter['only'] != Configure::read('current_action')) continue;
+					}
+				}				
+				
+				// Check if we are running an action thats an exception to our filter rules.
+				
+				if(isset($filter['except'])){
+					if(is_array($filter['except'])){
+						if(in_array($filter['except'], Configure::read('current_action'))) continue;
+					}else{
+						if($filter['except'] == Configure::read('current_action')) continue;
+					}
+				}
+				
+			}else{
+				$action = $filter;
+			}
+			
+			if(!method_exists($this, $action))	throw new Error("The filter: '$action' does not exist.");		
+			$this->$action();
+		}
 	}
 	
 	

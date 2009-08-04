@@ -80,6 +80,7 @@ class Application{
 	function run(){
 		require_once(APPLICATION_PATH."/controllers/index.php");
 		Auth::validate($_SERVER['REQUEST_URI']);
+		Configure::write('current_action', 'index');
 		$ind = new indexController();
 		$ind->build_controller();
 		$ind->index('asda');
