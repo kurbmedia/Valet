@@ -134,7 +134,19 @@ class Router{
 	 * @return boolean
 	 * @access private
 	 **/
-	function _process_routes(){
+	function _process_routes($full_route){
+		
+		include_once(BASE_PATH."/config/routes.php");
+		
+		foreach($routes as $route){
+			if(preg_match('@'.$route[0]."/?(.*)$@i", $full_route, $matches)){
+				$this->_controller = $route['controller'];
+				$this->_action	   = $route['action'];
+				$this->_args = explode("/",$matches[1]);
+				return true;
+			}
+		}
+		
 		return false;
 	}
 	
