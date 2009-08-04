@@ -65,12 +65,11 @@ class Auth{
 	
 	
 	public static function validate($request){
-		$data 	 = Configure::read('authentication');
+		$data 	 = Configure::read('authenticate');
 		if(!isset($data['protect'])) return null;
 		
 		$urls 	 = $data['protect'];
 		$default = (isset($data['redirect']))? $data['redirect'] : "/";
-		
 		foreach($urls as $value){
 			
 			$value 	  = explode(",", $value);

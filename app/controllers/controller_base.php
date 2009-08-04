@@ -1,7 +1,7 @@
 <?php
 
 
-abstract class ControllerBase extends Controller{
+class ControllerBase extends Controller{
 	
 	/*
 	
@@ -17,8 +17,7 @@ abstract class ControllerBase extends Controller{
 			after_filter  : called during object __destruct (controllers are destructed immediately following their action calls)
 	*/
 	
-	function index($args){}
-	
+	public $before_filter = "sex";	
 	
 }
 

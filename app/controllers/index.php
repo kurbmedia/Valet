@@ -1,11 +1,11 @@
 <?php 
 
-class indexController extends Controller{
+class indexController extends ControllerBase{
 	
 	public $before_filter = "dothis";
 	
 	function index($args){
-		echo($this->before_filter);
+
 	}
 	
 } 
