@@ -80,7 +80,9 @@ class Application{
 	function run(){
 		require_once(APPLICATION_PATH."/controllers/index.php");
 		$ind = new indexController();
+		$ind->build_controller();
 		$ind->index('asda');
+		$ind->destroy_controller();
 	}
 	
 	

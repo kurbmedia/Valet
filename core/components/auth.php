@@ -65,10 +65,20 @@ class Auth{
 	
 	
 	public static function validate($request){
-		$urls = Configure::read('authentication');
-		foreach($urls as $url => $rules){
-			if(preg_match('@'.$url.'/?@i', $request)){	// Match the requested url.
-				$validUser = $rules['validates'];
+		$data 	 = Configure::read('authentication');
+		if(!isset($data['protect'])) return null;
+		
+		$urls 	 = $data['protect'];
+		$default = (isset($data['redirect']))? $data['redirect'] : "/";
+		
+		foreach($urls as $value){
+			
+			$value 	  = explode(",", $value);
+			$redirect = (isset($value[2]))? $value[2] : $default; 
+			
+			if(preg_match('@'.$value[0].'/?@i', $request)){	// Match the requested url.
+				if(!isset($value[1])) throw new Error('Invalid user type or user type not set for protected url '.$value[0]);
+				$validUser = $value[1];
 
 				if(is_array($validUser)){
 					
@@ -77,9 +87,9 @@ class Auth{
 					foreach($validUser as $user) if(self::get() == $user) $pass = true;	// Check list of users for match
 					
 					if($pass == false){
-						if(!preg_match('@'.$request.'/?@i', $rules['redirect'])){
+						if(!preg_match('@'.$request.'/?@i', $redirect)){
 							Flash::error('You must be logged in to access this page.');
-							Application::redirect($rules['redirect']);
+							Application::redirect($redirect);
 							break;
 						}
 					}
@@ -91,9 +101,9 @@ class Auth{
 					$validUser = strtolower($validUser);
 					if(self::get() != $validUser){	// If user isn't allowed, redirect.
 
-						if(!preg_match('@'.$request.'/?@i', $rules['redirect'])){
+						if(!preg_match('@'.$request.'/?@i', $redirect)){
 							Flash::error('You must be logged in to access this page.');
-							Application::redirect($rules['redirect']);
+							Application::redirect($redirect);
 							break;
 						}
 					}

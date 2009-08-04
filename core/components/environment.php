@@ -2,12 +2,30 @@
 
 class Environment{
 	
+	/**
+	 * Holds the current environment's name
+	 *
+	 * @var string
+	 * @access private
+	 **/
 	private static $_current_environment;
 	
+	/**
+	 * Return the current environment's name
+	 *
+	 * @return void
+	 * @access public
+	 **/
 	public static function get(){
 		return self::$_current_environment;		
 	}
 	
+	/**
+	 * Loads all available environments, selects the current and sets it.
+	 *
+	 * @return void
+	 * @access public
+	 **/
 	public static function load(){
 		$data = parse_ini_file(BASE_PATH."/config/environments.ini", true);		
 		$server = $_SERVER['SERVER_NAME'];

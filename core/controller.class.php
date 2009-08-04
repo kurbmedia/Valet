@@ -6,7 +6,8 @@ abstract class Controller{
 	/**
 	 * Stores any vars set in the controllers not already predefined
 	 *
-	 * @var arrau
+	 * @var array
+	 * @access protected
 	 **/
 	protected $action_vars;
 	
@@ -15,6 +16,7 @@ abstract class Controller{
 	 * Stores all filter commands.
 	 *
 	 * @var array
+	 * @access protected
 	 **/
 	protected $controller_filters = array('before_filter' => array(), 'after_filter' => array(), 'around_filter' => array());
 	
@@ -22,15 +24,30 @@ abstract class Controller{
 	 * The current server request type. In this instance GET, POST, or XHR (Ajax requests)
 	 *
 	 * @var string
+	 * @access protected 
 	 **/
 	protected $request;
 
 	abstract public function index($args);
 	
+	
+	/**
+	 * Passthrough to override the default view.
+	 *
+	 * @return void
+	 * @access private
+	 **/
 	private function render($file){
 		View::set_view($file);
 	}
 	
+	
+	/**
+	 * Default variable setter.
+	 *
+	 * @return void
+	 * @access public	
+	 **/
 	public function __set($key, $val){
 
 		switch($key){
@@ -59,6 +76,12 @@ abstract class Controller{
 		}	
 	}
 	
+	/**
+	 * Default variable getter.
+	 *
+	 * @return void
+	 * @access public	
+	 **/	
 	public function __get($key){
 		
 		switch($key){
@@ -67,7 +90,13 @@ abstract class Controller{
 		}
 	}
 	
-	public function __construct(){
+	/**
+	 * Functions as a __constructor (allows controller to set its own constructors).
+	 *
+	 * @return void
+	 * @access protected	
+	 **/	
+	public final function build_controller(){
 		$this->action_vars = array();
 		
 		if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'){
@@ -76,12 +105,17 @@ abstract class Controller{
 			$this->request = (isset($_POST) && !empty($_POST))? "post" : "get";
 		}
 		
-		
 		foreach($this->controller_filters['before_filter'] as $filter) call_user_func(array($this, $filter));
 		foreach($this->controller_filters['around_filter'] as $filter) call_user_func(array($this, $filter));
 	}
 	
-	public function __destruct(){
+	/**
+	 * Functions as a __destructor (allows controller to set its own destructors).
+	 *
+	 * @return void
+	 * @access protected	
+	 **/
+	public final function destroy_controller(){
 		foreach($this->controller_filters['around_filter'] as $filter) call_user_func(array($this, $filter));
 		foreach($this->controller_filters['after_filter'] as $filter) call_user_func(array($this, $filter));
 	}
