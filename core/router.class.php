@@ -117,7 +117,11 @@ class Router{
 		$class->build_controller();
 		
 		$action = $this->_action;
-		$class->$action($this->_args);
+		if(method_exists($class, $action)){
+			$class->$action($this->_args);
+		}else{
+			throw new Error("You appear to be missing the action '$action' in your controller.");
+		}
 		
 		$class->destroy_controller();
 		
