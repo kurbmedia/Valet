@@ -18,7 +18,7 @@ abstract class Migration extends Phake{
 	 * @return void
 	 * @access protected
 	 **/
-	protected final function add_column($table, $column, $type){
+	protected final function add_column($table, $column, $type, $options = null){
 		
 	}
 	
@@ -28,7 +28,7 @@ abstract class Migration extends Phake{
 	 * @return void
 	 * @access protected
 	 **/
-	protected final function create_table($name, $props){
+	protected final function create_table($name, $cols, $options = null){
 		
 	}
 	

@@ -26,7 +26,7 @@ class Db extends Phake{
 			$db = $this->connect();
 			
 			$this->output('Creating migrations table..');
-			mysql_query("CREATE TABLE db_migrations (version VARCHAR(255) NOT NULL)", $this->db_conn);
+			mysql_query("CREATE TABLE db_migrations (id INT AUTO_INCREMENT, version VARCHAR(255) NOT NULL, PRIMARY KEY (id))", $this->db_conn);
 						
 			$this->output("Finished. Run 'phake db:migrate' to load your schema.");
 		}
@@ -81,7 +81,7 @@ class Db extends Phake{
 		$this->output("\n________________________________________\n");
 		
 		if(count($new_versions) > 0){
-			mysql_query("INSERT INTO db_migrations VALUES ('".implode("'),('", $new_versions)."')", $this->db_conn) or die(mysql_error());			
+			mysql_query("INSERT INTO db_migrations VALUES ('','".implode("'),('','", $new_versions)."')", $this->db_conn) or die(mysql_error());			
 			$this->output('Migrations complete.');
 			return null;
 		}
@@ -91,7 +91,7 @@ class Db extends Phake{
 	
 	public function reset(){
 		$db = $this->connect();
-		mysql_query("DELETE FROM db_migrations", $this->db_conn);
+		mysql_query("DELETE FROM db_migrations; ALTER TABLE db_migrations AUTO_INCREMENT = 1", $this->db_conn);
 		
 		$this->create();
 		$this->migrate();
