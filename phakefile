@@ -3,7 +3,6 @@
 $root_path  = dirname(__FILE__);
 
 require_once(dirname(__FILE__)."/core/boot.php");
-require_once(CONFIG_PATH."/migrations/migration.php");
 require_once(CORE_PATH."/components/loader.php");
 
 $data = parse_ini_file(dirname(__FILE__)."/config/config.ini", true);
