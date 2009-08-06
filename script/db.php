@@ -107,6 +107,8 @@ class Db extends Phake{
 			
 			if(isset($fallback)){
 				
+				if(array_search($version, $completed_migrations) === false) break;
+				
 				// We are migrating to a specific version.
 				require_once($file);
 				$class = new $class_name;	
@@ -160,6 +162,8 @@ class Db extends Phake{
 			}
 			
 			mysql_query("INSERT INTO db_migrations VALUES ".implode(",", $query), $this->db_conn) or die(mysql_error());			
+		
+			$this->sync();
 			$this->output('Migrations complete.');
 			return null;
 		}
@@ -179,6 +183,7 @@ class Db extends Phake{
 		while($result = mysql_fetch_assoc($fallback)) $version = $result['version'];
 		$this->flags['v'] = $version;
 		$this->migrate();
+		$this->sync();
 	}
 	
 	
@@ -195,6 +200,51 @@ class Db extends Phake{
 		$this->migrate();
 		
 	}
+	
+	
+	/**
+	 * Syncs the schema file with the current database.
+	 *
+	 * @return void
+	 **/
+	public function sync(){
+		
+		$this->output('Syncing DB Schema in config/shema.ini');
+		
+		$this->connect();
+		
+		$file = fopen(CONFIG_PATH."/schema.ini","wb");
+		fwrite($file, ";Database Schema: ".PROJECT."\n");
+		fwrite($file, ";Automatically generated with 'phake db:sync' DO NOT MODIFY.\n\n\n");
+		
+		$result = mysql_query('SHOW TABLES', $this->db_conn);
+		$tables = array();
+		
+		while($table = mysql_fetch_array($result)){
+			$tables[] = $table[0];
+		}
+				
+		foreach($tables as $k =>$v){
+			
+			if($v == "db_migrations") continue;
+			
+			$columns = mysql_query("DESCRIBE $v", $this->db_conn);
+			
+			fwrite($file, "[$v]\n");
+			
+			while($column = mysql_fetch_assoc($columns)){
+				fwrite($file, "\t".$column['Field']."\n");
+			}
+			
+			fwrite($file, "\n\n");
+		}
+		
+		fclose($file);
+		
+		$this->output('Sync complete.');
+		
+	}
+	
 	
 	/**
 	 * Output all processed migrations
