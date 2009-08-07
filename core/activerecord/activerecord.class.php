@@ -4,6 +4,7 @@ class ActiveRecord {
 
 	protected $columns       = array();
 	protected $attributes    = array();
+	protected $column_types  = array();
 	protected $associations  = array();
 	protected $is_modified = false;
 	protected $frozen = false;
@@ -123,10 +124,23 @@ class ActiveRecord {
 		$props = get_object_vars($item);
 		
 		if(!isset($props['columns']) || empty($props['columns'])){
-			// Use a describe to get columns.
-			$dbh =& self::get_dbh();
-			$describe = call_user_func_array(array(DB_ADAPTER."Adapter", __FUNCTION__),array($props['table_name'], $dbh));
-			return $describe;
+			
+			// Read columns from configuration.
+			
+			$config = Configure::read('db_schema');
+			$config = $config[$item];
+			
+			$columns 	= array();
+			$properties = array(); 
+			
+			foreach($config as $k => $v){
+				$columns[] 		= $k;
+				$properties[$k] = $v;
+			}
+			
+			$item->column_types = $properties;
+			return $columns;
+			
 		}else{
 			return $props['columns'];
 		}

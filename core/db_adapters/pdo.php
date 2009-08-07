@@ -19,25 +19,6 @@ class PDOAdapter implements DatabaseAdapter {
 	static function last_insert_id($dbh=null, $resource=null) {
 		return $dbh->lastInsertId($resource);
 	}
-	
-	static function get_columns($table_name, $dbh=null){
-		
-		$cache = Cache::read('models/'.$table_name);
-		if(!isset($cache)){
-			$cols = array();
-			$describe = $dbh->query("DESCRIBE $table_name",PDO::FETCH_ASSOC);
-			
-			foreach($describe as $item) $cols[] = $item['Field'];
-						
-			Cache::write('models/'.$table_name,$cols);			
-			return $cols;			
-	
-		}else{
-			return $cache;
-		}
-		
-		
-	}
 
 }
 

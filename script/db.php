@@ -233,7 +233,7 @@ class Db extends Phake{
 			fwrite($file, "[$v]\n");
 			
 			while($column = mysql_fetch_assoc($columns)){
-				fwrite($file, "\t".$column['Field']."\n");
+				fwrite($file, "\t".$column['Field']." = \"".$column['Type']."\"\n");
 			}
 			
 			fwrite($file, "\n\n");

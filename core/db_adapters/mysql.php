@@ -34,23 +34,6 @@ class MySQLAdapter implements DatabaseAdapter {
 		else
 			return mysql_insert_id($resource);
 	}
-	
-	static function get_columns($table_name, $dbh=null){
-		
-		$cache = Cache::read('models/'.$table_name);
-		if(!isset($cache)){
-		
-			$res = mysql_query("DESCRIBE $table_name", $dbh);
-			while($results[] = mysql_fetch_assoc($res));
-
-			$cols = array();
-			foreach($results as $result) if(!empty($result)) $cols[] = $result['Field'];
-			Cache::write('models/'.$table_name,$cols);
-			return $cols;
-		}else{
-			return $cache;
-		}
-	}
 
 }
 
