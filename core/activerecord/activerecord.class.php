@@ -126,9 +126,8 @@ class ActiveRecord {
 		if(!isset($props['columns']) || empty($props['columns'])){
 			
 			// Read columns from configuration.
-			
 			$config = Configure::read('db_schema');
-			$config = $config[$item];
+			$config = $config[$props['table_name']];
 			
 			$columns 	= array();
 			$properties = array(); 
@@ -157,11 +156,15 @@ class ActiveRecord {
 
 	private static function &get_dbh() {
 		if(!self::$dbh){
-			$db = Environment::getDB();
+			
+			$db = Configure::read('db_config');
 			$db_mode = $db['driver'];
+			$database = Configure::read('project');
+			$database = strtolower(str_replace(" ","_", $database['name']));
+			$database = $database."_".strtolower(Environment::get());
 			
 			self::$dbh = call_user_func_array(array(DB_ADAPTER."Adapter", __FUNCTION__),
-				array($db['host'], $db['db'], $db['user'], $db['pass'], $db_mode));
+				array($db['host'], $database, $db['user'], $db['pass'], $db_mode));
 		}
 		
 		return self::$dbh;

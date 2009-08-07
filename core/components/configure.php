@@ -4,7 +4,7 @@
 class Configure{
 	
 	private static $_values = array();
-	private static $_invalid_keys = array("db_config", "base_path", 'environment', 'db_schema', 'current_controller', 'current_action');
+	private static $_invalid_keys = array("db_config", "base_path", 'environment', 'db_schema', 'current_controller', 'current_action', 'project');
 	
 	public static function load(){
 		$data = parse_ini_file(CONFIG_PATH."/config.ini", true);
@@ -14,7 +14,6 @@ class Configure{
 		
 		$db_schema = parse_ini_file(CONFIG_PATH."/schema.ini", true);
 		self::write('db_schema', $db_schema);
-
 	}
 	
 	public static function read($val){

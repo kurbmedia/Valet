@@ -7,7 +7,21 @@ class Generate extends Phake{
 	
 	public function model(){
 		
-		$model_name = $this->vars[0];
+		Loader::load('components/inflector');
+		$file_name  = $this->vars[0];
+		$model_name = Inflector::camelize($file_name);
+		
+		$file 	= APPLICATION_PATH."/models/".$file_name.".php";
+		$stream = fopen($file, "w");
+
+		$file_data  = "<?php \n\n";
+		$file_data .= "class $model_name extends ActiveRecord{ \n\n";
+		$file_data .= "}\n\n";
+		$file_data .= "?>";		
+		
+		fwrite($stream,$file_data);
+		fclose($stream);		
+		$this->output("Created model: $model_name.");
 		
 	}
 	
@@ -35,6 +49,16 @@ class Generate extends Phake{
 		$this->output("Created migration: $class.");
 		
 	}
+	
+	/**
+	 * Help information for DB class.
+	 *
+	 * @return void
+	 **/
+	public function help(){
+		
+	}
+	
 	
 	
 } 
