@@ -22,6 +22,7 @@ class Application{
 		Loader::load('components/error');
 		Loader::load('components/configure');
 		Loader::load('controllers/controller_base');
+		Loader::load('components/object');
 		
 		
 		// Handle errors
