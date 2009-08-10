@@ -1,22 +1,109 @@
 <?php
 
 class ActiveRecord {
-
+	
+	/**
+	 * Holds a list of all columns for the selected table.
+	 *
+	 * @var array
+	 * @access protected
+	 **/
 	protected $columns       = array();
+	
+	/**
+	 * Holds a list of all item attributes
+	 *
+	 * @var array
+	 * @access protected
+	 **/
 	protected $attributes    = array();
+	
+	/**
+	 * Holds a list of all column types (varchar, int, etc)
+	 *
+	 * @var array
+	 * @access protected
+	 **/
 	protected $column_types  = array();
+	
+	/**
+	 * Holds a list of all associations for the current model.
+	 *
+	 * @var array
+	 * @access protected
+	 **/
 	protected $associations  = array();
+	
+	/**
+	 * Has this model been updated?
+	 *
+	 * @var boolean
+	 * @access protected
+	 **/
 	protected $is_modified = false;
+	
+	/**
+	 * Enables you to freeze a model to avoid unwanted changes.
+	 *
+	 * @var bolean
+	 * @access protected
+	 **/
 	protected $frozen = false;
+	
+	/**
+	 * Default primary key field name
+	 *
+	 * @var array
+	 * @access protected
+	 **/
 	protected $primary_key = 'id';
+	
+	/**
+	 * The actual table name (not model name) we are referring to.
+	 *
+	 * @var array
+	 * @access protected
+	 **/
 	protected $table_name;
+	
+	/**
+	 * Number of queries to be executed during manipulation.
+	 *
+	 * @var array
+	 * @access protected
+	 **/
 	protected static $query_count = 0;
+	
+	/**
+	 * Our database connection.
+	 *
+	 * @var mixed
+	 * @access protected
+	 **/
 	protected static $dbh;
+	
+	/**
+	 * Is this record new? (Was the new() method called on our model.)
+	 *
+	 * @var boolean
+	 * @access protected
+	 **/
 	public $new_record  = true;
-
+	
+	/**
+	 * Available association types
+	 *
+	 * @var array
+	 * @access protected
+	 **/
 	private $assoc_types = array('belongs_to', 'has_many', 'has_one');
-
- 	public function __construct($params=null, $new_record=true, $is_modified=false) {
+	
+	/**
+	 * Constructor for all models
+	 *
+	 * @return void
+	 **/
+	public function __construct($params=null, $new_record=true, $is_modified=false) {
 		
 		$this->table_name  = Inflector::tableize(get_class($this));
 		$this->columns	   = self::get_columns($this);
@@ -46,7 +133,13 @@ class ActiveRecord {
 			$this->new_record  = $new_record;
 		}
 	}
-
+	
+	
+	/**
+	 * Object overloading. Allows for finding of associations
+	 *
+	 * @return void
+	 **/
 	public function __get($name) {
 		
 		$name = Inflector::underscore($name);	// Add camelCase support.
@@ -66,9 +159,14 @@ class ActiveRecord {
 			if ($this->associations[$assoc_name] instanceof HasMany) return $this->associations[$assoc_name]->get_ids($this);
 		}
 		
-		throw new ActiveRecordException("attribute called '$name' doesn't exist", ActiveRecordException::AttributeNotFound);
+		throw new ActiveRecordException("Attribute called '$name' doesn't exist", ActiveRecordException::AttributeNotFound);
 	}
 
+	/**
+	 * Object overloading. Allows the setting of properties/associations.
+	 *
+	 * @return void
+	 **/
 	public function __set($name, $value) {
 		if($this->frozen) throw new ActiveRecordException("Can not update $name as object is frozen.", ActiveRecordException::ObjectFrozen);
 
@@ -100,22 +198,42 @@ class ActiveRecord {
 		}
 	}
 
-	/* 
-	  On any ActiveRecord object we can make method calls to a specific assoc.
-	  Example:
-	    $p = Post::find(1);
-	    $p->comments_push($comment);
-	  This calls push([$comment], $p) on the comments association
 	
-	*/
+	/**
+	 * Allows for miscellaneous find queries. (Only works in php 5.3)
+	 *
+	 * @return void
+	 **/
+	static function __callstatic($name, $args){
 
-	public function __call($name, $args){
-		list($assoc, $func) = explode("_", $name, 2);
-		if (array_key_exists($assoc, $this->associations)){
-	    	return $this->associations[$assoc]->$func($args, $this);
-		}else{
-			throw new ActiveRecordException("method or association not found ($assoc, $func)", ActiveRecordException::MethodOrAssocationNotFound);
+		$class 	= (function_exists('get_called_class'))? get_called_class() : self::get_called_class();
+		$name 	= strtolower($name);
+		$pieces = explode("_", $name); 
+		
+		$function = array_shift($pieces);
+		if($function != "find") throw new ActiveRecordException("Invalid find query: $name", ActiveRecordException::AttributeNotFound);
+		
+		$id_val = "";
+		
+		foreach($pieces as $piece){
+			if($piece == "by"){
+				array_shift($pieces);
+				break;
+			}
+			
+			$id_val = array_shift($pieces);
 		}
+
+		$field_name = implode($pieces);
+		if(empty($id_val)) $id_val = "all";
+
+		if(isset($args[1]) && is_array($args[0])){
+			if(isset($args[1]['conditions'])) $args[1]['conditions'] = $args[1]['conditions']." AND ".$field_name." = '".$args[0]."'";
+			self::find($id_val, $args[1], $class);
+		}else{
+			self::find($id_val, array('conditions' => $field_name." = '".$args[0]."'"), $class);
+		}
+		
 	}
 
 	// Misc get functions.
@@ -180,6 +298,7 @@ class ActiveRecord {
 	}
 
 	public static function query($query) {
+	
 		$dbh =& self::get_dbh();
 		#var_dump($query);
 		self::$query_count++;
@@ -310,14 +429,18 @@ class ActiveRecord {
 		return $object;
 	}
 
-	public static function find($id, $options=null) {
+	public static function find($id, $options=null, $class = null) {
 
-		$class = (function_exists('get_called_class'))? get_called_class() : self::get_called_class();
+		if(!isset($class) || $class == null){
+			$class = (function_exists('get_called_class'))? get_called_class() : self::get_called_class();
+		}
 
 		$query = self::generate_find_query($class, $id, $options);
 		$rows = self::query($query['query']);
 
 		$base_objects = array();
+
+		
 		foreach ($rows as $row) {
       	/* if we've done a join we have some fancy footwork to do
 	          we're going to process one row at a time.
