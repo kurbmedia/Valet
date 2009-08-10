@@ -12,17 +12,18 @@ class Application{
 
 		// Require core classes.
 		require_once(CORE_PATH."/components/loader.php");
-		require_once(CORE_PATH.'/controller.class.php');
-		require_once(CORE_PATH.'/router.class.php');
-		require_once(CORE_PATH.'/view.class.php');
+		
+		Loader::load('controller');
+		Loader::load('router');
+		Loader::load('view');
 		
 		Loader::load('components/inflector');
 		Loader::load('components/environment');
 		Loader::load('components/cache');
 		Loader::load('components/error');
+		Loader::load('components/object');
 		Loader::load('components/configure');
 		Loader::load('controllers/controller_base');
-		Loader::load('components/object');
 		
 		
 		// Handle errors
@@ -69,11 +70,11 @@ class Application{
 		
 		if(in_array('db', $options)){
 			
-			require_once(CORE_PATH.'/activerecord/activerecord.class.php');
-			require_once(CORE_PATH.'/activerecord/activerecordexception.class.php');
+			require_once(CORE_PATH.'/activerecord/activerecord.php');
+			require_once(CORE_PATH.'/activerecord/activerecordexception.php');
 			
 			$behaviors = array('association','belongsto','hasmany','hasone');
-			foreach($behaviors as $behavior) require_once(CORE_PATH.'/activerecord/'.$behavior.".class.php");
+			foreach($behaviors as $behavior) require_once(CORE_PATH.'/activerecord/'.$behavior.".php");
 			
 			$db = Configure::read('db_config');
 			$adapter = $db['adapter'];

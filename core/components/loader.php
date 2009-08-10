@@ -9,9 +9,9 @@ class Loader{
 		
 		if(count($items) == 1){
 			
-			if(!class_exists('Inflector') self::load('components/inflector');
-			$file_name = Inflector::underscore($obj);
-			
+			if(!class_exists('Inflector')) self::load('components/inflector');
+			$file_name = strtolower(Inflector::underscore($obj));
+						
 			$dirs = array(APPLICATION_PATH, CORE_PATH, CORE_PATH."/components");
 			foreach($dirs as $dir){
 				if(file_exists($dir."/".$file_name.".php")){
@@ -27,10 +27,10 @@ class Loader{
 			$location = array_shift($items);
 			$base_dir = "";
 
-			if($location == "components"){
-				$base_dir = CORE_PATH."/".strtolower($location);
-			}else{
-				$base_dir = APPLICATION_PATH."/".strtolower($location);
+			switch($location){
+				case "components" : $base_dir = CORE_PATH."/".strtolower($location); break;
+				case "core"		  : $base_dir = CORE_PATH;
+				default: $base_dir = APPLICATION_PATH."/".strtolower($location); break;
 			}
 
 			require_once($base_dir."/".strtolower(implode("/", $items)).".php");			
