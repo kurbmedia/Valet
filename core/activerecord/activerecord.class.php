@@ -204,7 +204,7 @@ class ActiveRecord {
 	 *
 	 * @return void
 	 **/
-	static function __callstatic($name, $args){
+	static function __callStatic($name, $args){
 
 		$class 	= (function_exists('get_called_class'))? get_called_class() : self::get_called_class();
 		$name 	= strtolower($name);
