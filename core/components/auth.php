@@ -25,13 +25,11 @@ class Auth{
 	public static function disable($userType){
 		$userType = strtolower($userType);
 		if(isset($_SESSION['auth'])) unset($_SESSION['auth']);
-		Configure::write('App.session', null); 
 	}
 	
 	public static function enable($userType, $attr = null){
 		$_SESSION['auth']['type'] = strtolower($userType);
 		$_SESSION['auth']['data'] = $attr;
-		Configure::write('App.session', $_SESSION['auth']);
 	}
 	
 	public static function get(){
@@ -41,7 +39,7 @@ class Auth{
 		if(isset($_SESSION['auth']['type'])){
 			return $_SESSION['auth']['type'];
 		}else{
-			return false;
+			return null;
 		}
 	}
 	

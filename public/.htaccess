@@ -1,3 +1,6 @@
+# Help out our view files a little.
+php_flag short_open_tag on
+
 # For IE .htc files (if used, optional)
 AddType text/x-component .htc
 

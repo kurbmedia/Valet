@@ -114,8 +114,10 @@ class Router{
 		
 		Loader::load('controllers/'.$this->_namespace."/".$file_name);
 		
-		if(Loader::check('helpers/'.$this->_namespace."/".$this->_controller."_helper")){
-			Loader::loade('helpers/'.$this->_namespace."/".$this->_controller."_helper");
+		$ns = (empty($this->_namespace))? "/" : $this->_namespace."/";
+		
+		if(Loader::check('helpers/'.$ns.$this->_controller."_helper")){
+			Loader::load('helpers/'.$ns.$this->_controller."_helper");
 			View::set_helper(Inflector::camelize($this->_controller."_helper"));
 		}
 

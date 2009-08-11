@@ -2,7 +2,6 @@
 
 ini_set('display_errors', true);
 
-
 define("BASE_PATH", 	   dirname(dirname(__FILE__)));		// Do not change.
 define("APPLICATION_PATH", BASE_PATH."/app");		// Points to the application directory
 define("CORE_PATH", 	   BASE_PATH."/core");		// Points to the core directory

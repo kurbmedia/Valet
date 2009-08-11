@@ -84,7 +84,7 @@ class View{
 		$file = VIEW_PATH."/".$file.".phtml";
 		
 		if(!file_exists($file) || !is_readable($file)){
-			throw new Error("The requested view '$file' is not available.", E_NOTICE);
+			throw new Error("The requested view '".basename($file)."' is not available.", E_NOTICE);
 		}
 		
 		$internals = array();
