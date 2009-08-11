@@ -1,0 +1,7 @@
+Valet intends to be a Ruby on Rails implementation in PHP. 
+
+Although it is impossible to clone RoR in a language like PHP, Valet tries to bring over a lot of the functionality and DRY methods from rails into the PHP development environment.
+
+If you are interested in collaborating let me know.
+
+If you clone this project, give me a shout, I would love to check out any changes/better implementations you come up with.
