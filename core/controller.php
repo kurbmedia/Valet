@@ -89,6 +89,15 @@ abstract class Controller{
 	}
 	
 	/**
+	 * undocumented function
+	 *
+	 * @return void
+	 **/
+	protected final function assign($k, $v){
+		View::assign($k, $v);
+	}
+	
+	/**
 	 * Functions as a __constructor (allows controller to set its own constructors).
 	 *
 	 * @return void

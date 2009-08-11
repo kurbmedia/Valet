@@ -4,7 +4,7 @@
 class Configure{
 	
 	private static $_values = array();
-	private static $_invalid_keys = array("db_config", "base_path", 'environment', 'db_schema', 'current_controller', 'current_action', 'project');
+	private static $_invalid_keys = array("db_config", "base_path", 'environment', 'db_schema', 'current_controller', 'current_action', 'project', 'view_path', 'options');
 	
 	public static function load(){
 		$data = parse_ini_file(CONFIG_PATH."/config.ini", true);

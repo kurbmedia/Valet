@@ -94,6 +94,7 @@ class Router{
 
 		$this->_action 	  = $action;
 		$this->_args   	  = $parts;
+		$this->_namespace = (empty($this->_namespace))? "" : implode("/", $this->_namespace);
 		$this->_connect();
 		
 	}
@@ -110,7 +111,13 @@ class Router{
 		Configure::write('current_action', $this->_action);
 		
 		$file_name = strtolower($this->_controller);
-		Loader::load('controllers/'.implode("/", $this->_namespace)."/".$file_name);
+		
+		Loader::load('controllers/'.$this->_namespace."/".$file_name);
+		
+		if(Loader::check('helpers/'.$this->_namespace."/".$this->_controller."_helper")){
+			Loader::loade('helpers/'.$this->_namespace."/".$this->_controller."_helper");
+			View::set_helper(Inflector::camelize($this->_controller."_helper"));
+		}
 
 		$class_name = Inflector::camelize($this->_controller)."Controller";
 		$class = new $class_name();
@@ -124,6 +131,8 @@ class Router{
 		}
 		
 		$class->destroy_controller();
+		
+		Configure::write('view_path', $this->_namespace."/".$this->_controller."/".$this->_action);
 		
 	}
 	

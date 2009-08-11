@@ -105,6 +105,8 @@ class Application{
 	public function run(){
 		$router = new Router();
 		$router->process_request();
+		$view = new View();
+		$view->render_view();
 	}
 	
 	

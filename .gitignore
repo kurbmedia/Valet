@@ -1,1 +1,3 @@
 phakefile
+cache/*.*
+cache/compile/*.*

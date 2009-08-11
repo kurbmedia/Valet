@@ -31,6 +31,9 @@ class Environment{
 		$server = $_SERVER['SERVER_NAME'];
 
 		foreach($data as $key => $env){
+			
+			if(strpos($key, ":") !== false) continue;
+			
 			if(preg_match('@(www\.)?'.$server."$@i", $env['domain'])){
 				
 				Configure::write('environment', $key);

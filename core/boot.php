@@ -9,6 +9,7 @@ define("CORE_PATH", 	   BASE_PATH."/core");		// Points to the core directory
 define("CONFIG_PATH",	   BASE_PATH."/config");	// Points to configuration files
 define("WEBROOT", 		   BASE_PATH."/public");	// Points to the site root
 
+define("VIEW_PATH",		   APPLICATION_PATH."/views");	// Points to configuration files
 
 require_once(CORE_PATH.'/application.php');
 

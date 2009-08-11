@@ -3,6 +3,7 @@
 class Error extends Exception{
 
 	public static function handle($e){
+
 		if(Environment::get() != 'production'){		
 			$file = str_replace(BASE_PATH."/lib/","",$e->file);
 			$str  = "<div class='error'><b>Application Error:</b> ".$e->message."</div>";
