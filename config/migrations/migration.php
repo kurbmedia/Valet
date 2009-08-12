@@ -44,6 +44,8 @@ abstract class Migration extends DB{
 	 **/
 	protected final function create_table($name, $cols, $options = null){
 		
+		$this->drop_table($name);
+		
 		$this->output("     -- Create table $name");
 		$query = array();
 		$keys  = array();
