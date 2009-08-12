@@ -43,6 +43,14 @@ abstract class Controller{
 	 * @access protected 
 	 **/
 	protected $request;
+	
+	/**
+	 * The current helper
+	 *
+	 * @var string
+	 * @access protected 
+	 **/
+	protected $_helper;
 
 	
 	/**
@@ -89,7 +97,27 @@ abstract class Controller{
 	}
 	
 	/**
-	 * undocumented function
+	 * Passthrough calling to helper methods.
+	 *
+	 * @return void
+	 **/
+	public final function __call($name, $args){
+		
+		$helper = (empty($this->_helper))? "ApplicationHelper" : $this->_helper;
+
+		Loader::load($helper);
+
+		if(is_callable(array($helper, $name))){
+			return call_user_func_array(array($helper, $name), $args);
+		}else{
+			throw new Error("Method not found: '$name'");
+		}
+		
+	}
+	
+	
+	/**
+	 * Assign Variables to the View
 	 *
 	 * @return void
 	 **/

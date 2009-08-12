@@ -32,6 +32,13 @@ class View{
 	private $_page_content;
 	
 	/**
+	 * Holds the current view file.
+	 *
+	 * @var string
+	 **/
+	private static $_current_view;
+	
+	/**
 	 * View constructor
 	 *
 	 * @return void
@@ -72,6 +79,7 @@ class View{
 	 * @return void
 	 **/
 	public function render_view(){
+		
 		$options = Configure::read('options');
 		
 		$file = Configure::read('view_path');
@@ -88,6 +96,7 @@ class View{
 		}
 		
 		$internals = array();
+		
 		foreach(glob(CORE_PATH."/plugins/plugin.*.php") as $plugin) include_once($plugin);
 		foreach(glob(BASE_PATH."/vendor/plugins/plugin.*.php") as $plugin) include_once($plugin);
 		

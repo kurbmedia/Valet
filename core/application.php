@@ -49,7 +49,53 @@ class Application{
 			ini_set('display_errors', false);
 		}
 		
+		$this->autoload();
+		
 	}
+	
+	/**
+	 * Autoload any elements from config.
+	 *
+	 * @return void
+	 **/
+	private function autoload($from_plugin = null){
+
+		$options  = explode(",", Configure::read('autoload'));
+		
+		if(empty($options) || !is_array($options)) return;
+		
+		if(!isset($from_plugin)){
+			
+			$plugins = Configure::read('modules');
+			
+			if(is_array($plugins) && !empty($plugins)){
+				foreach($plugins['configure'] as $plugin)	$this->autoload(strtolower($plugin));
+			}
+			
+			$locations = array(APPLICATION_PATH, CORE_PATH."/vendor"); 
+			
+		}else{
+			$locations = array(BASE_PATH."/vendor/plugins/$from_plugin");
+		}
+		
+		
+		foreach($options as $type){
+			
+			foreach($locations as $location){
+				
+				$location = $location."/".$type;
+				$files = glob($location."/*.php");
+			
+				if(!is_array($files) || empty($files)) continue;
+			
+				foreach($files as $file){
+					require_once($file);
+				}
+			}
+		}
+		
+	}
+	
 	
 	/**
 	 * Allows enabling of certain Application functionality.
@@ -84,7 +130,7 @@ class Application{
 			require_once CORE_PATH.'/db_adapters/'.DB_ADAPTER.'.php';			
 		}		
 	}
-	
+		
 	/**
 	 * Passthrough function to redirect to location. Exits application.
 	 *
@@ -103,6 +149,7 @@ class Application{
 	 * @access public
 	 **/
 	public function run(){
+		
 		$router = new Router();
 		$router->process_request();
 		$view = new View();

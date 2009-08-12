@@ -8,7 +8,7 @@ class Generate extends Phake{
 	public function model(){
 		
 		Loader::load('components/inflector');
-		$file_name  = $this->vars[0];
+		$file_name  = array_shift($this->vars)
 		$model_name = Inflector::camelize($file_name);
 		
 		$file 	= APPLICATION_PATH."/models/".$file_name.".php";
@@ -47,6 +47,8 @@ class Generate extends Phake{
 		fwrite($stream,$file_data);
 		fclose($stream);		
 		$this->output("Created migration: $class.");
+		
+		return $file;
 		
 	}
 	

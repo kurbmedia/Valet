@@ -1,6 +1,6 @@
 <?php 
 
-class indexController extends ControllerBase{
+class IndexController extends ControllerBase{
 	
 //	public $before_filter = "";
 	
