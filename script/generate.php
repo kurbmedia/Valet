@@ -8,7 +8,7 @@ class Generate extends Phake{
 	public function model(){
 		
 		Loader::load('components/inflector');
-		$file_name  = array_shift($this->vars)
+		$file_name  = array_shift($this->vars);
 		$model_name = Inflector::camelize($file_name);
 		
 		$file 	= APPLICATION_PATH."/models/".$file_name.".php";
