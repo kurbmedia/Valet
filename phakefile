@@ -10,7 +10,6 @@ $data = parse_ini_file(dirname(__FILE__)."/config/config.ini", true);
 
 define('PROJECT', strtolower(str_replace(" ","_", $data['project']['name'])));
 define('ENVIRONMENT', 'development');
-define('APPLICATION', &$app);
 
 // Add all desired paths to the task paths array;
 

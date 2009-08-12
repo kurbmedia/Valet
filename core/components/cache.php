@@ -5,7 +5,7 @@ class Cache{
 	static function cleanup($dir = null){
 		// Removes session based files from the cache.
 		
-		if(!isset($dir)) $dir = APPLICATION_PATH.'/cache/';
+		if(!isset($dir)) $dir = BASE_PATH.'/cache/';
 		
 		$dir = opendir($dir);
 		
@@ -24,7 +24,7 @@ class Cache{
 	
 	static function read($fileName){
 		
-		$fileName = APPLICATION_PATH.'/cache/'.$fileName.'.cache';
+		$fileName = BASE_PATH.'/cache/'.$fileName.'.cache';
 		
 		if(self::readable($fileName)){
 			$file = fopen($fileName,'r');
@@ -42,8 +42,8 @@ class Cache{
 	
 	static function write($fileName,$data){
 		
-		$tempFile = APPLICATION_PATH.'/cache/'.$fileName.'.tmp';
-		$fileName = APPLICATION_PATH.'/cache/'.$fileName.'.cache';
+		$tempFile = BASE_PATH.'/cache/'.$fileName.'.tmp';
+		$fileName = BASE_PATH.'/cache/'.$fileName.'.cache';
 		
 		if(self::writable()){
 			$file = fopen($tempFile,"wb");
@@ -57,7 +57,7 @@ class Cache{
 			@chmod($fileName,0666);
 			
 		}else{
-			throw new Exception('Cache Error: Cache directory: '.APPLICATION_PATH.'/cache is not writable by the server.');
+			throw new Exception('Cache Error: Cache directory: /cache is not writable by the server.');
 		}
 	}
 	
