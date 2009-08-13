@@ -12,10 +12,10 @@ class Application{
 
 		// Require core classes.
 		require_once(VALET_CORE_PATH."/components/loader.php");
-		
-		Loader::load('controller');
-		Loader::load('router');
-		Loader::load('view');
+		require_once(VALET_CORE_PATH."/controller.php");
+		require_once(VALET_CORE_PATH."/router/router.php");
+		require_once(VALET_CORE_PATH."/view/view.php");
+		require_once(VALET_CORE_PATH."/helper.php");
 		
 		Loader::load('components/inflector');
 		Loader::load('components/environment');
@@ -151,12 +151,10 @@ class Application{
 	public function run(){
 		
 		$router = new Router();
-		$router->process_request();
-		
-		$view_file = $router->connect();
+		$router->route();
 		
 		$view = new View();
-		$view->render_view($view_file);
+		$view->render();
 	}
 	
 	

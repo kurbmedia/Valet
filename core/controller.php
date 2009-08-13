@@ -11,6 +11,14 @@ abstract class Controller{
 	 **/
 	protected $action_vars;
 	
+	/**
+	 * Our parameters from the url.
+	 *
+	 * @var array
+	 * @access protected
+	 **/
+	public $params;
+	
 	
 	/**
 	 * Functions to be called before processing of actions.

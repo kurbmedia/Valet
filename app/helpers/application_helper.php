@@ -1,7 +1,7 @@
 <?php 
 
 
-class ApplicationHelper{
+class ApplicationHelper extends Helper{
 	
 } 
 
