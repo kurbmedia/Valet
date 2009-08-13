@@ -72,7 +72,29 @@ class View{
 		
 		require_once("view_file.php");
 		
-		$page = new ViewFile($path, self::$_vars);
+		$parts 	= explode("/", $path);
+		
+		array_pop($parts); 		
+		
+		require_once(VALET_APPLICATION_PATH."/helpers/application_helper.php");
+		
+		if(file_exists(VALET_APPLICATION_PATH."/helpers/".implode("/", $parts)."_helper.php")){		
+			$helper = array_pop($parts); 
+			$helper = Inflector::camelize($helper."_helper");
+			Loader::load("helpers/".implode("/", $parts)."_helper.php");
+		}else{
+			$helper = "ApplicationHelper";
+		}
+		
+		if($options['caching'] == true){
+			
+			$compile_dir = VALET_BASE_PATH."/cache/compile/";		
+		
+		}			
+
+		$page = new ViewFile($path, self::$_vars, $helper);
+		print $page;
+	
 
 	}
 	

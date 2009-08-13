@@ -11,6 +11,13 @@ class ViewFile{
 	private $_page_content;
 	
 	/**
+	 * Holds the final template content.
+	 *
+	 * @var string
+	 **/
+	private $_template_content;
+	
+	/**
 	 * References the current page helper.
 	 *
 	 * @var string
@@ -25,28 +32,15 @@ class ViewFile{
 	private $_vars;
 	
 	/**
-	 * Constructor
+	 * Construct our page.
 	 *
 	 * @return void
 	 **/
-	public function __construct($path, &$vars){
+	public function __construct($path, &$vars, $helper = "ApplicationHelper"){
 
-		$this->_vars = $vars;
+		$this->_vars 	= $vars;
+		$this->_helper 	= $helper;
 		
-		$parts 	= explode("/", $path);
-		
-		array_pop($parts); 		
-		
-		require_once(VALET_APPLICATION_PATH."/helpers/application_helper.php");
-		
-		if(file_exists(VALET_APPLICATION_PATH."/helpers/".implode("/", $parts)."_helper.php")){		
-			$helper = array_pop($parts); 
-			$this->_helper = Inflector::camelize($helper."_helper");
-			Loader::load("helpers/".implode("/", $parts)."_helper.php");
-		}else{
-			$helper = "ApplicationHelper";
-		}
-
 		$file = VALET_VIEW_PATH."/".$path.".phtml";
 		
 		if(!file_exists($file) || !is_readable($file)){
@@ -62,7 +56,8 @@ class ViewFile{
 		ob_start();
 			include(VALET_VIEW_PATH."/layouts/".View::get_layout().".phtml");
 		$result = ob_get_clean();
-		print $result;
+		
+		$this->_template_content = $result;
 					
 	}
 	
@@ -83,10 +78,10 @@ class ViewFile{
 	 **/
 	public function __call($name, $args){
 		
-		if(is_callable(array($helper, $name))){
-			return call_user_func_array(array($helper, $name), $args);
+		if(is_callable(array($this->_helper, $name))){
+			return call_user_func_array(array($this->_helper, $name), $args);
 		}else{
-			throw new Error("Invalid helper method '$name'");
+			throw new Error("Invalid helper method '$name' called on helper '".$this->_helper."'");
 		}
 	}
 	
@@ -96,14 +91,29 @@ class ViewFile{
 	 *
 	 * @return mixed
 	 **/
-	function __get($k){
+	public function __get($k){
 
 		if(isset($this->_vars[$k])){
 			return $this->_vars[$k];
 		}
 		
+		$config_var = Configure::read($k);
+		
+		if(isset($config_var)){
+			return $config_var;
+		}
+		
 		throw new Error("Undefined variable '$k'");
 		
+	}
+	
+	/**
+	 * Allows object to be used as a string.
+	 *
+	 * @return void
+	 **/
+	public function __tostring(){
+		return $this->_template_content;
 	}
 	
 	
