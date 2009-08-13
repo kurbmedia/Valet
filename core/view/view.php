@@ -89,7 +89,8 @@ class View{
 		if($options['caching'] == true){
 			
 			$compile_dir = VALET_BASE_PATH."/cache/compile/";		
-		
+			$cache_file  = md5($path.".phtml")."_".str_replace("/", "_", $path).".php";
+			
 		}			
 
 		$page = new ViewFile($path, self::$_vars, $helper);
