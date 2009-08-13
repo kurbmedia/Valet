@@ -59,7 +59,7 @@ class Db extends Phake{
 		Loader::load('components/inflector');
 		$db = $this->connect();
 		
-		$migrations = glob(CONFIG_PATH."/migrations/*.php");
+		$migrations = glob(VALET_CONFIG_PATH."/migrations/*.php");
 		natsort($migrations);
 		
 		if(!$db) $this->fail('The database: '.PROJECT."_".ENVIRONMENT." does not exist.");
@@ -213,7 +213,7 @@ class Db extends Phake{
 		
 		$this->connect();
 		
-		$file = fopen(CONFIG_PATH."/schema.ini","wb");
+		$file = fopen(VALET_CONFIG_PATH."/schema.ini","wb");
 		fwrite($file, ";Database Schema: ".PROJECT."\n");
 		fwrite($file, ";Automatically generated with 'phake db:sync' DO NOT MODIFY.\n\n\n");
 		
@@ -285,7 +285,7 @@ class Db extends Phake{
 	 * @return void
 	 **/
 	private function init(){		
-		$data = parse_ini_file(BASE_PATH."/config/environments.ini", true);
+		$data = parse_ini_file(VALET_BASE_PATH."/config/environments.ini", true);
 		
 		if(!isset($data['database:'.ENVIRONMENT])){
 			$this->fail("Unable to find database configuration for environment '$env'");

@@ -5,16 +5,16 @@ class Error extends Exception{
 	public static function handle($e){
 
 		if(Environment::get() != 'production'){		
-			$file = str_replace(BASE_PATH."/lib/","",$e->file);
+			$file = str_replace(VALET_BASE_PATH."/lib/","",$e->file);
 			$str  = "<div class='error'><b>Application Error:</b> ".$e->message."</div>";
 			$str .= "<div class='detail'><b>Thrown in: ".$file."</b>, line <b>".$e->line."</b>";
 			$str .= "</div>";			
 			$str .= "<div class='trace'><h4>Stack Trace:</h4>".str_replace("\n", "<br>", $e->getTraceAsString()).'</div>';
 			self::dump_html($str, $e);			
 		}else{
-			@touch(BASE_PATH."/log/application.log");
-			@chmod(BASE_PATH."/log/application.log",0777);
-			error_log( "Application Error [".date('m/d/Y h:i:s a')."]: ".$e->message." [ ".$e->file.", line ".$e->line." ]\n",3,APPLICATION_PATH."/log/application.log");	
+			@touch(VALET_BASE_PATH."/log/application.log");
+			@chmod(VALET_BASE_PATH."/log/application.log",0777);
+			error_log( "Application Error [".date('m/d/Y h:i:s a')."]: ".$e->message." [ ".$e->file.", line ".$e->line." ]\n",3, VALET_APPLICATION_PATH."/log/application.log");	
 		}
 	}
 	

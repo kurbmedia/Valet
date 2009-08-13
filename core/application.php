@@ -11,7 +11,7 @@ class Application{
 	public function __construct(){
 
 		// Require core classes.
-		require_once(CORE_PATH."/components/loader.php");
+		require_once(VALET_CORE_PATH."/components/loader.php");
 		
 		Loader::load('controller');
 		Loader::load('router');
@@ -72,7 +72,7 @@ class Application{
 				foreach($plugins['configure'] as $plugin)	$this->autoload(strtolower($plugin));
 			}
 			
-			$locations = array(APPLICATION_PATH, CORE_PATH."/vendor"); 
+			$locations = array(VALET_APPLICATION_PATH, VALET_CORE_PATH."/vendor"); 
 			
 		}else{
 			$locations = array(BASE_PATH."/vendor/plugins/$from_plugin");
@@ -116,18 +116,18 @@ class Application{
 		
 		if(in_array('db', $options)){
 			
-			require_once(CORE_PATH.'/activerecord/activerecord.php');
-			require_once(CORE_PATH.'/activerecord/activerecordexception.php');
+			require_once(VALET_CORE_PATH.'/activerecord/activerecord.php');
+			require_once(VALET_CORE_PATH.'/activerecord/activerecordexception.php');
 			
 			$behaviors = array('association','belongsto','hasmany','hasone');
-			foreach($behaviors as $behavior) require_once(CORE_PATH.'/activerecord/'.$behavior.".php");
+			foreach($behaviors as $behavior) require_once(VALET_CORE_PATH.'/activerecord/'.$behavior.".php");
 			
 			$db = Configure::read('db_config');
 			$adapter = $db['adapter'];
 			define('DB_ADAPTER',$adapter);
 			
-			require_once CORE_PATH.'/db_adapters/databaseadapter.php';
-			require_once CORE_PATH.'/db_adapters/'.DB_ADAPTER.'.php';			
+			require_once VALET_CORE_PATH.'/db_adapters/databaseadapter.php';
+			require_once VALET_CORE_PATH.'/db_adapters/'.DB_ADAPTER.'.php';			
 		}		
 	}
 		
@@ -152,8 +152,11 @@ class Application{
 		
 		$router = new Router();
 		$router->process_request();
+		
+		$view_file = $router->connect();
+		
 		$view = new View();
-		$view->render_view();
+		$view->render_view($view_file);
 	}
 	
 	

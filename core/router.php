@@ -62,7 +62,7 @@ class Router{
 		// Get separate parts
 		$parts = explode('/', $route);
 		
-		$cmd_path  = APPLICATION_PATH."/controllers/";
+		$cmd_path  = VALET_APPLICATION_PATH."/controllers/";
 	
 		foreach ($parts as $part) {
 			$fullpath = $cmd_path . $part;
@@ -95,7 +95,6 @@ class Router{
 		$this->_action 	  = $action;
 		$this->_args   	  = $parts;
 		$this->_namespace = (empty($this->_namespace))? "" : implode("/", $this->_namespace);
-		$this->_connect();
 		
 	}
 	
@@ -134,7 +133,7 @@ class Router{
 		
 		$class->destroy_controller();
 		
-		Configure::write('view_path', $this->_namespace."/".$this->_controller."/".$this->_action);
+		return $this->_namespace."/".$this->_controller."/".$this->_action;
 		
 	}
 	
@@ -147,7 +146,7 @@ class Router{
 	 **/
 	function _process_routes($full_route){
 		
-		include_once(BASE_PATH."/config/routes.php");
+		include_once(VALET_BASE_PATH."/config/routes.php");
 		
 		foreach($routes as $route){
 			if(preg_match('@'.$route[0]."/?(.*)$@i", $full_route, $matches)){

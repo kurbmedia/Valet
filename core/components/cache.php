@@ -5,7 +5,7 @@ class Cache{
 	static function cleanup($dir = null){
 		// Removes session based files from the cache.
 		
-		if(!isset($dir)) $dir = BASE_PATH.'/cache/';
+		if(!isset($dir)) $dir = VALET_BASE_PATH.'/cache/';
 		
 		$dir = opendir($dir);
 		
@@ -24,7 +24,7 @@ class Cache{
 	
 	static function read($fileName){
 		
-		$fileName = BASE_PATH.'/cache/'.$fileName.'.cache';
+		$fileName = VALET_BASE_PATH.'/cache/'.$fileName.'.cache';
 		
 		if(self::readable($fileName)){
 			$file = fopen($fileName,'r');
@@ -42,8 +42,8 @@ class Cache{
 	
 	static function write($fileName,$data){
 		
-		$tempFile = BASE_PATH.'/cache/'.$fileName.'.tmp';
-		$fileName = BASE_PATH.'/cache/'.$fileName.'.cache';
+		$tempFile = VALET_BASE_PATH.'/cache/'.$fileName.'.tmp';
+		$fileName = VALET_BASE_PATH.'/cache/'.$fileName.'.cache';
 		
 		if(self::writable()){
 			$file = fopen($tempFile,"wb");
@@ -62,7 +62,7 @@ class Cache{
 	}
 	
 	static function writable(){
-		return is_writable(APPLICATION_PATH.'/cache/');
+		return is_writable(VALET_APPLICATION_PATH.'/cache/');
 	}
 		
 }

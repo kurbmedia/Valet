@@ -27,7 +27,7 @@ class Environment{
 	 * @access public
 	 **/
 	public static function load(){
-		$data = parse_ini_file(BASE_PATH."/config/environments.ini", true);		
+		$data = parse_ini_file(VALET_BASE_PATH."/config/environments.ini", true);		
 		$server = $_SERVER['SERVER_NAME'];
 
 		foreach($data as $key => $env){

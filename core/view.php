@@ -78,18 +78,17 @@ class View{
 	 *
 	 * @return void
 	 **/
-	public function render_view(){
+	public function render_view($file){
 		
 		$options = Configure::read('options');
 		
-		$file = Configure::read('view_path');
 		$file = trim($file, '/\\');
 		$file = explode("/", $file);
 				
 		if(count($file) > 1 && $file[0] == "index") $file = array_shift($file);
 		
 		$file = (is_array($file))? implode("/", $file) : $file;
-		$file = VIEW_PATH."/".$file.".phtml";
+		$file = VALET_VIEW_PATH."/".$file.".phtml";
 		
 		if(!file_exists($file) || !is_readable($file)){
 			throw new Error("The requested view '".basename($file)."' is not available.", E_NOTICE);
@@ -97,8 +96,8 @@ class View{
 		
 		$internals = array();
 		
-		foreach(glob(CORE_PATH."/plugins/plugin.*.php") as $plugin) include_once($plugin);
-		foreach(glob(BASE_PATH."/vendor/plugins/plugin.*.php") as $plugin) include_once($plugin);
+		foreach(glob(VALET_CORE_PATH."/plugins/plugin.*.php") as $plugin) include_once($plugin);
+		foreach(glob(VALET_BASE_PATH."/vendor/plugins/plugin.*.php") as $plugin) include_once($plugin);
 		
 		extract(self::$_vars,EXTR_SKIP);
 		
@@ -107,7 +106,7 @@ class View{
 		$this->_page_content = ob_get_clean();	
 		
 		ob_start();
-			include(VIEW_PATH."/layouts/".$this->_layout.".phtml");
+			include(VALET_VIEW_PATH."/layouts/".$this->_layout.".phtml");
 		$result = ob_get_clean();
 		
 		print $result;

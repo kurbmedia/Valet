@@ -3,7 +3,7 @@
 $root_path  = dirname(__FILE__);
 
 require_once(dirname(__FILE__)."/core/boot.php");
-require_once(CORE_PATH."/components/loader.php");
+require_once(VALET_CORE_PATH."/components/loader.php");
 
 $app  = new Application();
 $data = parse_ini_file(dirname(__FILE__)."/config/config.ini", true);

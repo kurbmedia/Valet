@@ -12,7 +12,7 @@ class Loader{
 			if(!class_exists('Inflector')) self::load('components/inflector');
 			$file_name = strtolower(Inflector::underscore($obj));
 						
-			$dirs = array(APPLICATION_PATH."/helpers", APPLICATION_PATH."/models", CORE_PATH, CORE_PATH."/components");
+			$dirs = array(VALET_APPLICATION_PATH."/helpers", VALET_APPLICATION_PATH."/models", VALET_CORE_PATH, VALET_CORE_PATH."/components");
 			foreach($dirs as $dir){
 				if(file_exists($dir."/".$file_name.".php")){
 					require_once($dir."/".$file_name.".php");
@@ -28,9 +28,9 @@ class Loader{
 			$base_dir = "";
 
 			switch($location){
-				case "components" : $base_dir = CORE_PATH."/".strtolower($location); break;
-				case "core"		  : $base_dir = CORE_PATH;
-				default: $base_dir = APPLICATION_PATH."/".strtolower($location); break;
+				case "components" : $base_dir = VALET_CORE_PATH."/".strtolower($location); break;
+				case "core"		  : $base_dir = VALET_CORE_PATH;
+				default: $base_dir = VALET_APPLICATION_PATH."/".strtolower($location); break;
 			}
 			
 			$file = $base_dir."/".strtolower(implode("/", $items)).".php";
