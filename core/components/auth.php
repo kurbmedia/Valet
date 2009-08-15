@@ -63,25 +63,26 @@ class Auth{
 	
 	
 	public static function validate($request){
-		$data 	 = Configure::read('authenticate');
-		if(!isset($data['protect'])) return null;
 		
-		$urls 	 = $data['protect'];
-		$default = (isset($data['redirect']))? $data['redirect'] : "/";
-		foreach($urls as $value){
-			
-			$value 	  = explode(",", $value);
-			$redirect = (isset($value[2]))? $value[2] : $default; 
-			
-			if(preg_match('@'.$value[0].'/?@i', $request)){	// Match the requested url.
-				if(!isset($value[1])) throw new Error('Invalid user type or user type not set for protected url '.$value[0]);
-				$validUser = $value[1];
+		$config  = Configure::get_instance();		
+		$data	 = $config->authentication;
+		
+		if(empty($data)) return null;
+		
+		foreach($data as $url => $values){
 
-				if(is_array($validUser)){
+			$redirect = (isset($values['on_fail']))? $values['on_fail'] : "/"; 
+			
+			if(preg_match('@'.$url.'/?@i', $request)){	// Match the requested url.
+				if(!isset($values['allow'])) throw new Error('Invalid user type or user type not set for protected url '.$value[0]);
+
+				$valid_user = $values['allow'];
+
+				if(is_array($valid_user)){
 					
 					// Access list is an array of user types.
 					$pass = false;
-					foreach($validUser as $user) if(self::get() == $user) $pass = true;	// Check list of users for match
+					foreach($valid_user as $user) if(self::get() == $user) $pass = true;	// Check list of users for match
 					
 					if($pass == false){
 						if(!preg_match('@'.$request.'/?@i', $redirect)){
@@ -95,8 +96,8 @@ class Auth{
 					
 					// Access list is a single user type.
 					
-					$validUser = strtolower($validUser);
-					if(self::get() != $validUser){	// If user isn't allowed, redirect.
+					$valid_user = strtolower($valid_user);
+					if(self::get() != $valid_user){	// If user isn't allowed, redirect.
 
 						if(!preg_match('@'.$request.'/?@i', $redirect)){
 							Flash::error('You must be logged in to access this page.');
