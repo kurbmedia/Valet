@@ -5,12 +5,13 @@ class Error extends Exception{
 	public static function handle($e){
 
 		if(Environment::get() != 'production'){		
-			$file = str_replace(VALET_BASE_PATH."/lib/","",$e->file);
+			$file = explode(VALET_BASE_PATH, $e->file);
+			$file = str_replace(VALET_BASE_PATH."/lib/","",$file[1]);
 			$str  = "<div class='error'><b>Application Error:</b> ".$e->message."</div>";
 			$str .= "<div class='detail'><b>Thrown in: ".$file."</b>, line <b>".$e->line."</b>";
 			$str .= "</div>";			
 			$str .= "<div class='trace'><h4>Stack Trace:</h4>".str_replace("\n", "<br>", $e->getTraceAsString()).'</div>';
-			self::dump_html($str, $e);			
+			self::dump_html($str, $file, $e);			
 		}else{
 			@touch(VALET_BASE_PATH."/log/application.log");
 			@chmod(VALET_BASE_PATH."/log/application.log",0777);
@@ -18,7 +19,7 @@ class Error extends Exception{
 		}
 	}
 	
-	private static function dump_html($str, $e){
+	private static function dump_html($str, $file, $e){
 		echo <<<STR
 			<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 			<head>
@@ -32,7 +33,7 @@ class Error extends Exception{
 				</style>
 			</head>
 			<body>
-				<h2>Application Error: $e->file</h2>
+				<h2>Application Error: $file</h2>
 				$str
 			</body>
 			</html>

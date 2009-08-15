@@ -36,12 +36,12 @@ class ViewFile{
 	 *
 	 * @return void
 	 **/
-	public function __construct($path, &$vars, $helper = "ApplicationHelper"){
+	public function __construct($path, &$vars, &$helper = array()){
 
 		$this->_vars 	= $vars;
 		$this->_helper 	= $helper;
 		
-		$file = VALET_VIEW_PATH."/".$path.".phtml";
+		$file = $path.".phtml";
 		
 		if(!file_exists($file) || !is_readable($file)){
 			throw new Error("The requested view '".$path.".phtml' is not available.", E_NOTICE);
@@ -78,11 +78,14 @@ class ViewFile{
 	 **/
 	public function __call($name, $args){
 		
-		if(is_callable(array($this->_helper, $name))){
-			return call_user_func_array(array($this->_helper, $name), $args);
-		}else{
-			throw new Error("Invalid helper method '$name' called on helper '".$this->_helper."'");
-		}
+		foreach($this->_helper as $helper){
+			
+			if(is_callable(array($helper, $name))){
+				return call_user_func_array(array($helper, $name), $args);
+			}
+		}	
+			
+		throw new Error("Invalid helper method '$name'");
 	}
 	
 	

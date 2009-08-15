@@ -75,7 +75,7 @@ class Application{
 			$locations = array(VALET_APPLICATION_PATH, VALET_CORE_PATH."/vendor"); 
 			
 		}else{
-			$locations = array(BASE_PATH."/vendor/plugins/$from_plugin");
+			$locations = array(VALET_BASE_PATH."/vendor/plugins/$from_plugin/app");
 		}
 		
 		
@@ -84,6 +84,8 @@ class Application{
 			foreach($locations as $location){
 				
 				$location = $location."/".$type;
+				if(!is_dir($location)) continue;
+				
 				$files = glob($location."/*.php");
 			
 				if(!is_array($files) || empty($files)) continue;

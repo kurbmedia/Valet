@@ -38,7 +38,7 @@ class Router {
 		$url_array = explode('/', $route);
 		
 		if($route == "/" || empty($route)){
-			$this->_connect($this->_map['base']['controller'], $this->_map['base']['action'], array());
+			$this->_default($this->_map['base']['controller']."/".$this->_map['base']['action']);
 			return;
 		}
 		
@@ -112,14 +112,16 @@ class Router {
 	 * @return void
 	 **/
 	private function _connect($class_path, $action, $parameters) {
-
-		$parts 		= explode("/", $class_path);
-		$controller = (count($parts) > 0)? array_shift($parts) : $class_path;
 		
-		$file_path  = implode("/", $parts);
+		$parts 		= explode("/", $class_path);
+		$controller = array_pop($parts); 
 
-		$view_path  = (empty($file_path) || $file_path == "")? $controller : $file_path."/".$controller;
-		$file_path  = VALET_APPLICATION_PATH."/controllers/".$controller."_controller.php";
+		$view_path  = array_slice($parts, array_search("controllers", $parts) + 1);
+		array_push($view_path, $controller);
+		
+		$view_path = implode("/", $view_path);
+				
+		$file_path  = $class_path."_controller.php";
 
 		$class = Inflector::camelize($controller."_controller");
 		
@@ -127,6 +129,8 @@ class Router {
 			
 			require_once($file_path);
 			$controller = new $class();
+			
+			if(!isset($action) || empty($action)) $action = "index";
 			
 			if(!method_exists($controller, $action)){
 				throw new Error("Method '$action' does not exist on $class.");
@@ -156,33 +160,73 @@ class Router {
 	 * @return void
 	 **/
 	private function _default($route){
-
-		$parts  = explode("/", $route);
-		$path	= VALET_APPLICATION_PATH."/controllers/";
-		$found  = true;
 		
-		foreach($parts as $part){
+		$parts  = explode("/", $route);
+		$paths	= array(VALET_APPLICATION_PATH."/controllers/");
+		$found  = false;
+		
+		$plugins = Configure::read('plugins');
+		
+		if(isset($plugins['configure']) && is_array($plugins['configure'])){
+			
+			foreach($plugins['configure'] as $plugin){
+				
+				$plugin_path = VALET_PLUGIN_PATH."/".$plugin."/app/controllers";
 
-			if(is_dir($path.$part)){
-				$path = $path.$part ."/";
-				continue;
+				if(is_dir($plugin_path)){
+					array_push($paths, $plugin_path."/");
+				}else{
+					throw new Error("The plugin '$plugin' was not found.");
+				}
 			}
-			
-			if(is_file($path.$part."_controller.php")){
-				$path = $path.$part ."/";
-				array_shift($parts);
-				break;
-			}
-			
-			$found = false;
-			
 		}
+		
+		$class_path = "";
+		
+		foreach($paths as $path){			
+			
+			$namespaced = false;
+			
+			foreach($parts as $part){
+								
+				if(is_dir($path.$part)){
+					$path 		= $path.$part."/";
+					$namespaced = true;
+					continue;
+				}
+			
+				if(is_file($path.$part."_controller.php")){
+					$path  = $path.$part;
+					$found = true;
+					break;
+				}
+				
+				break;							
+			}
+			
+			$class_path = $path;			
+
+			if($found == true){
+				break;
+			}else{
+				
+				if($namespaced == true && file_exists($class_path."index_controller.php")){
+					$found = true;
+					$class_path .= "index";
+				}else{
+					continue;
+				}
+			}
+			
+		}		
+		
 		
 		if($found == false){
 			throw new Error("No controller found for the url '$route'");
 		}
 		
-		$this->_connect($path, array_shift($parts), $parts);
+		array_shift($parts);
+		$this->_connect($class_path, array_shift($parts), $parts);
 		
 						
 	}
