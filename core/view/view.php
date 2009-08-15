@@ -85,8 +85,9 @@ class View{
 		}
 		
 		foreach($view_paths as $check_path){
-			
+
 			if(file_exists($check_path."/".$path.".phtml")){
+				$view_file = $check_path."/".$path.".phtml";
 				$pass = true;
 				break;
 			}
@@ -101,7 +102,6 @@ class View{
 		$parts 	= explode("/", $path);
 		
 		array_pop($parts); 		
-		
 		require_once(VALET_APPLICATION_PATH."/helpers/application_helper.php");
 		
 		$helpers = array();
@@ -109,7 +109,7 @@ class View{
 		if(file_exists(VALET_APPLICATION_PATH."/helpers/".implode("/", $parts)."_helper.php")){		
 			$helper = array_pop($parts); 
 			$helpers[] = Inflector::camelize($helper."_helper");
-			Loader::load("helpers/".implode("/", $parts)."_helper.php");
+			Loader::load("helpers/".$helper."_helper");
 		}		
 		
 		
@@ -123,7 +123,7 @@ class View{
 		}
 			
 
-		$page = new ViewFile($path, self::$_vars, $helpers);
+		$page = new ViewFile($view_file, self::$_vars, $helpers);
 		print $page;
 	
 

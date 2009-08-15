@@ -36,16 +36,11 @@ class ViewFile{
 	 *
 	 * @return void
 	 **/
-	public function __construct($path, &$vars, &$helper = array()){
+	public function __construct($file, &$vars, &$helper = array()){
 
 		$this->_vars 	= $vars;
 		$this->_helper 	= $helper;
 		
-		$file = $path.".phtml";
-		
-		if(!file_exists($file) || !is_readable($file)){
-			throw new Error("The requested view '".$path.".phtml' is not available.", E_NOTICE);
-		}
 				
 		extract($this->_vars,EXTR_SKIP);
 		
