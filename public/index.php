@@ -1,7 +1,5 @@
 <?php
 
-print_r($_SERVER);
-
 // Require application.
 require_once("../core/boot.php");
 

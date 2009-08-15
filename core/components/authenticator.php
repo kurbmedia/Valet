@@ -1,12 +1,12 @@
 <?php
 
-class Auth{
+class Authenticator{
 
 	private static $_instance;
 	private static $_type;
 
-	public static function instance(){
-		if(!isset(self::$_instance) || !self::$_instance instanceof AuthComponent) self::$_instance = new AuthComponent;
+	public static function get_instance(){
+		if(!isset(self::$_instance) || !self::$_instance instanceof Authenticator) self::$_instance = new Authenticator;
 		return self::$_instance;
 	}
 	
@@ -63,18 +63,20 @@ class Auth{
 	
 	
 	public static function validate($request){
-		
+
 		$config  = Configure::get_instance();		
 		$data	 = $config->authentication;
 		
 		if(empty($data)) return null;
 		
+		
 		foreach($data as $url => $values){
 
 			$redirect = (isset($values['on_fail']))? $values['on_fail'] : "/"; 
-			
+
 			if(preg_match('@'.$url.'/?@i', $request)){	// Match the requested url.
-				if(!isset($values['allow'])) throw new Error('Invalid user type or user type not set for protected url '.$value[0]);
+				
+				if(!isset($values['allow'])) throw new Error('Invalid user type or user type not set for protected url '.$request);
 
 				$valid_user = $values['allow'];
 

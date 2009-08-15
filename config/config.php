@@ -13,7 +13,7 @@ $config->options = array(
 
 
 $config->authentication = array(	
-	'/admin/(.*)'	=> array('allow' => 'user_type', 'on_fail' => 'rediret_here_on_fail')	
+	'admin/?(.*)?'	=> array('allow' => 'user_type', 'on_fail' => '/')	
 );
 
 

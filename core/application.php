@@ -37,7 +37,7 @@ class Application{
 		
 		// Load enabled options
 		if(in_array('auth', $options)){	
-			Loader::load('components/Auth'); 
+			Loader::load('components/Authenticator'); 
 			Loader::load('components/Flash');
 		}
 		

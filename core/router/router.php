@@ -35,6 +35,9 @@ class Router {
 		
 		$route = trim($route, '/\\');
 		
+		$authenticator = Authenticator::get_instance();
+		$authenticator->validate($route);
+		
 		$url_array = explode('/', $route);
 		
 		if($route == "/" || empty($route)){
