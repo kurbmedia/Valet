@@ -1,12 +1,8 @@
 <?php
 
-$map['routes'] = array(
-
-	'asd/:id' => array('controller' => 'index', 'action' => 'index')
-
-);
+$map = RouteMapper::get_instance();
 
 
-// This is your home controller/action.
+// Connect all custom routes.
 
-$map['base'] = array('controller' => 'index', 'action' => 'index');
+$map->connect("user/something/:id", array('controller' => 'index', 'action' => 'index'));

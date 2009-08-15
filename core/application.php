@@ -17,7 +17,9 @@ class Application{
 		Loader::load('view/View');
 		Loader::load('view/HelperBase');
 		
-		Loader::load('router/Router');
+		Loader::load('router/RouteMapper');
+		Loader::load('router/Route');
+		Loader::load('router/Dispatcher');
 		
 		Loader::load('Controller');
 		Loader::load('ControllerBase');		
@@ -80,8 +82,8 @@ class Application{
 	 **/
 	public function run(){
 		
-		$router = new Router();
-		$router->route();
+		$dispatcher = new Dispatcher();
+		$dispatcher->dispatch();
 		
 		$view = new View();
 		$view->render();

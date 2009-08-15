@@ -1,108 +1,29 @@
 <?php
 
 
-class Router {
-	
-	/**
-	 * Array of user defined paths.
-	 *
-	 * @var array
-	 **/
-	private $_map;
-	
-	
-	/**
-	 * Constructor
-	 *
-	 * @return void
-	 **/
-	function __construct(){
-		
-		include_once(VALET_CONFIG_PATH."/routes.php");
-		$this->_map = &$map;
-			
-	}
+class Dispatcher {
+
 	
 	/**
 	 * Routes our path.
 	 *
 	 * @return void
 	 **/
-	public function route() {
-	
+	public function dispatch() {
+		
 		$url   = explode('?',$_SERVER['REQUEST_URI']);
 		$route = strtolower($url[0]);
-		
+
 		$route = trim($route, '/\\');
-		
+
 		$authenticator = Authenticator::get_instance();
 		$authenticator->validate($route);
 		
-		$url_array = explode('/', $route);
+		$mapper	= RouteMapper::get_instance();
+		$route  = $mapper->find_route($route);
 		
-		if($route == "/" || empty($route)){
-			$this->_default($this->_map['base']['controller']."/".$this->_map['base']['action']);
-			return;
-		}
-		
-		
-		if(empty($this->_map['routes'])){
-			$this->_default($route);
-			return;
-		}
-		
-		$good_route = true;
-		
-		$action = "index";
-		$controller_paths = array();
-
-		$params 	= array();
-		
-		foreach($this->_map['routes'] as $request =>  $response){
-			
-			$request_parts = explode("/", $request);
-			$counter 	   = 0;
-			$params	   	   = array();
-
-			$controller = isset($response['controller'])? $response['controller'] : "";
-			
-			foreach($request_parts as $part){
-				
-				$part = strtolower($part);
-				
-				if($part == ":action"){
-					
-					if(isset($response['action'])){
-						$action = $response['action'];
-					}else{
-						$action = $url_array[$counter];
-					}
-				
-				}elseif(substr($part, 0,1) == ":"){
-					
-					$params[substr($part, 1)] = $url_array[$counter];					
-				
-				}elseif ($part != $url_array[$counter] && str_replace("-","_", $part) != $url_array[$counter]) {
-
-					$controller = (isset($response['controller']))? $response['controller'] : $part;
-					$good_route = false;
-					
-					break;
-					
-				}else{
-					$controller_paths[] = array_shift($request_parts);
-				}
-				
-				$counter++;
-			}
-			
-			$remainder  = array_slice($url_array, $counter);			
-			$params 	= array_merge($params, $remainder);
-						
-		}
-		
-		if($good_route == true){	
-			$this->_connect($controller, $action, $params);
+		if(isset($route) && $route instanceof Route){	
+			$this->_connect($route->controller, $route->action, $route->params);
 		}else{
 			$this->_default($route);
 		}
