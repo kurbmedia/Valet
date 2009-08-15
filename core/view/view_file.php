@@ -18,11 +18,11 @@ class ViewFile{
 	private $_template_content;
 	
 	/**
-	 * References the current page helper.
+	 * References the current page helpers.
 	 *
 	 * @var string
 	 **/
-	private $_helper;
+	private $_helpers;
 	
 	/**
 	 * Holds all of the existing view variables.
@@ -36,10 +36,10 @@ class ViewFile{
 	 *
 	 * @return void
 	 **/
-	public function __construct($file, &$vars, &$helper = array()){
+	public function __construct($file, &$vars, &$helpers = array()){
 
-		$this->_vars 	= $vars;
-		$this->_helper 	= $helper;
+		$this->_vars = $vars;		
+		$this->_helpers = $helpers;
 		
 				
 		extract($this->_vars,EXTR_SKIP);
@@ -55,8 +55,7 @@ class ViewFile{
 		$this->_template_content = $result;
 					
 	}
-	
-	
+
 	/**
 	 * Releases the current template content.
 	 *
@@ -72,15 +71,7 @@ class ViewFile{
 	 * @return void
 	 **/
 	public function __call($name, $args){
-		
-		foreach($this->_helper as $helper){
-			
-			if(is_callable(array($helper, $name))){
-				return call_user_func_array(array($helper, $name), $args);
-			}
-		}	
-			
-		throw new Error("Invalid helper method '$name'");
+		return call_user_func_array(array($this->_helpers[$name], $name), $args);
 	}
 	
 	

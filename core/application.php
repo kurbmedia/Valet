@@ -15,8 +15,9 @@ class Application{
 		require_once(VALET_CORE_PATH."/controller.php");
 		require_once(VALET_CORE_PATH."/router/router.php");
 		require_once(VALET_CORE_PATH."/view/view.php");
-		require_once(VALET_CORE_PATH."/helper.php");
+		require_once(VALET_CORE_PATH."/view/helper_base.php");
 		
+		Loader::load('components/resource_manager');
 		Loader::load('components/inflector');
 		Loader::load('components/environment');
 		Loader::load('components/cache');
@@ -49,55 +50,17 @@ class Application{
 			ini_set('display_errors', false);
 		}
 		
-		$this->autoload();
-		
-	}
-	
-	/**
-	 * Autoload any elements from config.
-	 *
-	 * @return void
-	 **/
-	private function autoload($from_plugin = null){
+		if(Configure::read('autoload_models') == true){
 
-		$options  = explode(",", Configure::read('autoload'));
-		
-		if(empty($options) || !is_array($options)) return;
-		
-		if(!isset($from_plugin)){
-			
-			$plugins = Configure::read('modules');
-			
-			if(is_array($plugins) && !empty($plugins)){
-				foreach($plugins['configure'] as $plugin)	$this->autoload(strtolower($plugin));
+			$models = ResourceManager::get_models();
+
+			foreach($models as $k => $v){
+				require_once($k);
 			}
-			
-			$locations = array(VALET_APPLICATION_PATH, VALET_CORE_PATH."/vendor"); 
-			
-		}else{
-			$locations = array(VALET_BASE_PATH."/vendor/plugins/$from_plugin/app");
-		}
-		
-		
-		foreach($options as $type){
-			
-			foreach($locations as $location){
-				
-				$location = $location."/".$type;
-				if(!is_dir($location)) continue;
-				
-				$files = glob($location."/*.php");
-			
-				if(!is_array($files) || empty($files)) continue;
-			
-				foreach($files as $file){
-					require_once($file);
-				}
-			}
-		}
+		} 
 		
 	}
-	
+
 	
 	/**
 	 * Allows enabling of certain Application functionality.

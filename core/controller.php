@@ -52,14 +52,6 @@ abstract class Controller{
 	 **/
 	protected $request;
 	
-	/**
-	 * The current helper
-	 *
-	 * @var string
-	 * @access protected 
-	 **/
-	protected $_helper;
-
 	
 	/**
 	 * Passthrough to override the default view.
@@ -111,10 +103,6 @@ abstract class Controller{
 	 **/
 	public final function __call($name, $args){
 		
-		$helper = (empty($this->_helper))? "ApplicationHelper" : $this->_helper;
-
-		Loader::load($helper);
-
 		if(is_callable(array($helper, $name))){
 			return call_user_func_array(array($helper, $name), $args);
 		}else{

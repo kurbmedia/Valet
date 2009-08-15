@@ -102,18 +102,6 @@ class View{
 		$parts 	= explode("/", $path);
 		
 		array_pop($parts); 		
-		require_once(VALET_APPLICATION_PATH."/helpers/application_helper.php");
-		
-		$helpers = array();
-		
-		if(file_exists(VALET_APPLICATION_PATH."/helpers/".implode("/", $parts)."_helper.php")){		
-			$helper = array_pop($parts); 
-			$helpers[] = Inflector::camelize($helper."_helper");
-			Loader::load("helpers/".$helper."_helper");
-		}		
-		
-		
-		if(empty($helpers)) $helpers[] = "ApplicationHelper";
 		
 		if($options['caching'] == true){
 			
@@ -121,9 +109,27 @@ class View{
 			$cache_file  = md5($path.".phtml")."_".str_replace("/", "_", $path).".php";
 			
 		}
+		
+		$controller_path_parts = explode("/", $path);
+		array_pop($controller_path_parts);
+		
+		$helpers = ResourceManager::get_helpers(implode("/", $controller_path_parts));
+		$helper_classes = array();
+		
+		foreach($helpers as $file => $helper_class){
 			
+			include_once($file);
+			
+			$helper = new $helper_class();
+			
+			foreach (get_class_methods($helper) as $method) {
+		          if(substr($method, 0, 1) != '_'){
+	            	$helper_classes[$method] = $helper;
+	            }
+	        }
+		}	
 
-		$page = new ViewFile($view_file, self::$_vars, $helpers);
+		$page = new ViewFile($view_file, self::$_vars, $helper_classes);
 		print $page;
 	
 

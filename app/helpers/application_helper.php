@@ -1,7 +1,7 @@
 <?php 
 
 
-class ApplicationHelper extends Helper{
+class ApplicationHelper extends HelperBase{
 	
 	function doit($text){
 		return strtoupper($text);
