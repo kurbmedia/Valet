@@ -24,6 +24,9 @@ class Application{
 		Loader::load('Controller');
 		Loader::load('ControllerBase');		
 		
+		// Setup Routes
+		include_once(VALET_CONFIG_PATH."/routes.php");
+		
 	}
 
 	

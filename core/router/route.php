@@ -38,14 +38,14 @@ class Route{
 	public function __construct($route, $args){
 		
 		$this->_route 	  = $route;
-		$this->controller = isset($args['controller']) ? $args['controller'] : ":controller";
-		$this->action	  = isset($args['action']) ? $args['action'] : ":action";
+		$this->controller = isset($args['controller']) ? $args['controller'] : null;
+		$this->action	  = isset($args['action']) ? $args['action'] : null;
 	}
 	
 	/**
 	 * Matches a url with the route.
 	 *
-	 * @return void
+	 * @return boolean
 	 **/
 	public function match($url){
 
@@ -58,7 +58,7 @@ class Route{
 		$params 	= array();
 		$url_array	= explode("/", $url);
 		
-		$request_parts = explode("/", $this->_path);
+		$request_parts = explode("/", $this->_route);
 		$counter 	   = 0;
 		$params	   	   = array();
 
@@ -68,7 +68,6 @@ class Route{
 			$part = strtolower($part);
 
 			if($part == ":action"){
-
 				$this->action = isset($this->action) ? $this->action : $url_array[$counter];
 
 			}elseif(substr($part, 0,1) == ":"){

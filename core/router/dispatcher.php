@@ -12,20 +12,20 @@ class Dispatcher {
 	public function dispatch() {
 		
 		$url   = explode('?',$_SERVER['REQUEST_URI']);
-		$route = strtolower($url[0]);
+		$path = strtolower($url[0]);
 
-		$route = trim($route, '/\\');
+		$path = trim($path, '/\\');
 
 		$authenticator = Authenticator::get_instance();
-		$authenticator->validate($route);
+		$authenticator->validate($path);
 		
 		$mapper	= RouteMapper::get_instance();
-		$route  = $mapper->find_route($route);
+		$route  = $mapper->find_route($path);
 		
 		if(isset($route) && $route instanceof Route){	
 			$this->_connect($route->controller, $route->action, $route->params);
 		}else{
-			$this->_default($route);
+			$this->_default($path);
 		}
 		
 	}
@@ -36,7 +36,7 @@ class Dispatcher {
 	 * @return void
 	 **/
 	private function _connect($class_path, $action, $parameters) {
-		
+
 		$parts 		= explode("/", $class_path);
 		$controller = array_pop($parts); 
 
@@ -48,35 +48,32 @@ class Dispatcher {
 		$file_path  = $class_path."_controller.php";
 
 		$class = Inflector::camelize($controller."_controller");
-		
-		if(file_exists($file_path)){
-			
+
+		try{
 			require_once($file_path);
-			$controller = new $class();
-			
-			if(!isset($action) || empty($action)) $action = "index";
-			
-			if(!method_exists($controller, $action)){
-				throw new Error("Method '$action' does not exist on $class.");
-				return;
-			}
-			
-			$controller->params = &$parameters;
-			$controller->build_controller();
-			
-			$controller->$action();
-			$controller->destroy_controller();
-			
-			$config = Configure::get_instance();
-			$config->view = $view_path."/".$action;
-			
-		
-		}else{
-			
-			throw new Error("The controller '$controller' could not be loaded.");
-			
 		}
-				
+		catch(Exception $e){
+			throw new Error("The controller '$controller' could not be loaded.");
+		}
+		
+		
+		$controller = new $class();
+			
+		if(!isset($action) || empty($action)) $action = "index";
+		
+		if(!method_exists($controller, $action)){
+			throw new Error("Method '$action' does not exist on $class.");
+			return;
+		}
+		
+		$controller->params = &$parameters;
+		$controller->build_controller();
+		
+		$controller->$action();
+		$controller->destroy_controller();
+		
+		$config = Configure::get_instance();
+		$config->view = $view_path."/".$action;	
 	}
 	
 	
@@ -86,7 +83,7 @@ class Dispatcher {
 	 * @return void
 	 **/
 	private function _default($route){
-		
+
 		$parts  = explode("/", $route);
 		$paths	= array(VALET_APPLICATION_PATH."/controllers/");
 		$found  = false;
@@ -111,11 +108,11 @@ class Dispatcher {
 		$class_path = "";
 		
 		foreach($paths as $path){			
-			
+
 			$namespaced = false;
 			
 			foreach($parts as $part){
-								
+
 				if(is_dir($path.$part)){
 					$path 		= $path.$part."/";
 					$namespaced = true;

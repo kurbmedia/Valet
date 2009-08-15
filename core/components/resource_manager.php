@@ -29,7 +29,8 @@ class ResourceManager{
 	 *
 	 * @return array
 	 **/
-	public static function get_controllers($route){
+	public static function get_controller($route){
+	
 		
 	}
 	

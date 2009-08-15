@@ -46,7 +46,7 @@ class RouteMapper{
 		
 		$route = new Route($route, $options);
 		array_push($this->_routes, $route);
-		
+
 	}
 	
 	/**

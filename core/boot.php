@@ -56,4 +56,5 @@ include_once(VALET_CONFIG_PATH."/config.php");
 $db_access = parse_ini_file(VALET_CONFIG_PATH."/database.ini", true);
 $config->db_access = $db_access[VALET_ENV];
 
+
 ?>
