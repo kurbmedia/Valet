@@ -49,7 +49,7 @@ class ViewFile{
 		$this->_page_content = ob_get_clean();	
 		
 		ob_start();
-			include(VALET_VIEW_PATH."/layouts/".View::get_layout().".phtml");
+			include("layouts/".View::get_layout().".phtml");
 		$result = ob_get_clean();
 		
 		$this->_template_content = $result;

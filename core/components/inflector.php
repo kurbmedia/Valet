@@ -1,7 +1,7 @@
 <?php 
 
 class Inflector {
-	function pluralize($word) {
+	public static function pluralize($word) {
 		$result = strval($word);
 
 		if (in_array(strtolower($result), self::uncountable_words())){
@@ -18,7 +18,7 @@ class Inflector {
 		}
 	}
 
-    function singularize($word) {
+    public static function singularize($word) {
         $result = strval($word);
 
         if (in_array(strtolower($result), self::uncountable_words())) {
@@ -35,43 +35,43 @@ class Inflector {
         }
     }
 
-    function camelize($lower_case_and_underscored_word) {
+    public static function camelize($lower_case_and_underscored_word) {
         return preg_replace('/(^|_)(.)/e', "strtoupper('\\2')", strval($lower_case_and_underscored_word));
     }
   
-    function underscore($camel_cased_word) {
+    public static function underscore($camel_cased_word) {
         return strtolower(preg_replace('/([A-Z]+)([A-Z])/','\1_\2', preg_replace('/([a-z\d])([A-Z])/','\1_\2', strval($camel_cased_word))));
     }
 
-    function humanize($lower_case_and_underscored_word) {
+    public static function humanize($lower_case_and_underscored_word) {
         return ucfirst(strtolower(preg_replace('_', " ", strval($lower_case_and_underscored_word))));
     }
 
-    function demodulize($class_name_in_module) {
+    public static function demodulize($class_name_in_module) {
         return preg_replace('/^.*::/', '', strval($class_name_in_module));
     }
 
-    function tableize($class_name) {
+    public static function tableize($class_name) {
         return self::pluralize(self::underscore($class_name));
     }
 
-    function classify($table_name) {
+    public static function classify($table_name) {
         return self::camelize(self::singularize($table_name));
     }
 
-    function foreign_key($class_name, $separate_class_name_and_id_with_underscore = true) {
+    public static function foreign_key($class_name, $separate_class_name_and_id_with_underscore = true) {
         return self::underscore(self::demodulize($class_name)) .
           ($separate_class_name_and_id_with_underscore ? "_id" : "id");
     }
 
-    function constantize($camel_cased_word=NULL) {
+    public static function constantize($camel_cased_word=NULL) {
     }
 
-    function uncountable_words() { #:doc
+    public static function uncountable_words() { #:doc
         return array( 'equipment', 'information', 'rice', 'money', 'species', 'series', 'fish' );
     }
   
-    function plural_rules() { #:doc:
+    public static function plural_rules() { #:doc:
         return array(
             '/^(ox)$/'                => '\1\2en',     # ox
             '/([m|l])ouse$/'          => '\1ice',      # mouse, louse
@@ -96,7 +96,7 @@ class Inflector {
         );
     }
 
-    function singular_rules() { #:doc:
+    public static function singular_rules() { #:doc:
         return array(
             '/(matr)ices$/'         =>'\1ix',
             '/(vert|ind)ices$/'     => '\1ex',

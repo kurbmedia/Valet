@@ -43,7 +43,7 @@ class ResourceManager{
 		if(!empty(self::$_helpers)) return self::$_helpers;
 		
 		$helpers  = array();
-		$defaults = glob(VALET_CORE_PATH."/view/helpers/*.php");
+		$defaults = glob(VALET_ROOT."/core/view/helpers/*.php");
 		
 		// Get all of the defaults.
 		

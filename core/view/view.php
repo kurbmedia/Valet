@@ -24,6 +24,14 @@ class View{
 	 **/
 	private static $_current_view;
 	
+	
+	/**
+	 * Holds a reference to the config object.
+	 *
+	 * @var string
+	 **/
+	private $_config;
+	
 	/**
 	 * View constructor
 	 *
@@ -31,14 +39,17 @@ class View{
 	 **/
 	public function __construct(){
 		
+		$this->_config = Configure::get_instance();
+		
 		if(empty($this->_layout)){
-			$file = Configure::read('options');
+			$file = $this->_config->options;
 			$file = $file['layout'];
 		
 			if(empty($file)) $file = "main";
 
 			self::$_layout = $file; 
-		}		
+		}
+				
 	}
 	
 	/**
@@ -67,11 +78,11 @@ class View{
 	 **/
 	public function render(){
 		
-		$options = Configure::read('options');
-		$path	 = Configure::read('view_path');
-		$plugins = Configure::read('plugins');
+		$options = $this->_config->options;
+		$path	 = $this->_config->view;
+		$plugins = $this->_config->plugins;
 		
-		$view_paths = array(VALET_VIEW_PATH);
+		$view_paths = array(VALET_APPLICATION_PATH."/views");
 		$pass	 = true;
 		
 		if(isset($plugins['configure']) && is_array($plugins['configure'])){

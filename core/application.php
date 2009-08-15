@@ -9,55 +9,18 @@ class Application{
 	 * @access public
 	 **/
 	public function __construct(){
+		
+		Loader::load('components/ResourceManager');
+		Loader::load('components/Cache');
+		Loader::load('components/Object');
 
-		// Require core classes.
-		require_once(VALET_CORE_PATH."/components/loader.php");
-		require_once(VALET_CORE_PATH."/controller.php");
-		require_once(VALET_CORE_PATH."/router/router.php");
-		require_once(VALET_CORE_PATH."/view/view.php");
-		require_once(VALET_CORE_PATH."/view/helper_base.php");
+		Loader::load('view/View');
+		Loader::load('view/HelperBase');
 		
-		Loader::load('components/resource_manager');
-		Loader::load('components/inflector');
-		Loader::load('components/environment');
-		Loader::load('components/cache');
-		Loader::load('components/error');
-		Loader::load('components/object');
-		Loader::load('components/configure');
-		Loader::load('controllers/controller_base');
+		Loader::load('router/Router');
 		
-		
-		// Handle errors
-		set_exception_handler(array('Error','handle'));
-		
-		// Allow short tags
-		ini_set('short_open_tag', true);
-		
-		
-		// Load Configuration
-		Configure::load();
-		
-		// Load Environment
-		Environment::load();
-
-		
-		// Handle errors
-		set_exception_handler(array('Error','handle'));
-		if(Environment::get() != "production"){
-			error_reporting(E_ALL);
-			ini_set('display_errors', true);
-		}else{
-			ini_set('display_errors', false);
-		}
-		
-		if(Configure::read('autoload_models') == true){
-
-			$models = ResourceManager::get_models();
-
-			foreach($models as $k => $v){
-				require_once($k);
-			}
-		} 
+		Loader::load('Controller');
+		Loader::load('ControllerBase');		
 		
 	}
 
@@ -68,31 +31,33 @@ class Application{
 	 * @return void
 	 * @access public
 	 **/
-	public function enable($options){
+	public function enable($options = "auth,flash,db"){
+		
 		$options = explode(",", $options);
 		
 		// Load enabled options
 		if(in_array('auth', $options)){	
-			Loader::load('components/auth'); 
-			Loader::load('components/flash');
+			Loader::load('components/Auth'); 
+			Loader::load('components/Flash');
 		}
 		
-		if(in_array('flash', $options))	Loader::load('components/flash');
-		
+		if(in_array('flash', $options))	Loader::load('components/flash');		
 		if(in_array('db', $options)){
 			
-			require_once(VALET_CORE_PATH.'/activerecord/activerecord.php');
-			require_once(VALET_CORE_PATH.'/activerecord/activerecordexception.php');
+			Loader::load('activerecord/ActiveRecord');
+			Loader::load('activerecord/ActiveRecordException');
 			
 			$behaviors = array('association','belongsto','hasmany','hasone');
-			foreach($behaviors as $behavior) require_once(VALET_CORE_PATH.'/activerecord/'.$behavior.".php");
+			foreach($behaviors as $behavior) Loader::load('activerecord/'.$behavior);
 			
-			$db = Configure::read('db_config');
+			$config = Configure::get_instance();
+			
+			$db 	 = $config->db_access;
 			$adapter = $db['adapter'];
-			define('DB_ADAPTER',$adapter);
 			
-			require_once VALET_CORE_PATH.'/db_adapters/databaseadapter.php';
-			require_once VALET_CORE_PATH.'/db_adapters/'.DB_ADAPTER.'.php';			
+			define('VALET_DB_ADAPTER',$adapter);
+			Loader::load('db_adapters/DatabaseAdapter');
+			Loader::load('db_adapters/'.VALET_DB_ADAPTER);			
 		}		
 	}
 		

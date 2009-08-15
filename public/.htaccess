@@ -1,3 +1,5 @@
+SetEnv VALET_ENV "development"
+
 # Help out our view files a little.
 php_flag short_open_tag on
 

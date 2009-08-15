@@ -142,8 +142,10 @@ class Router {
 			
 			$controller->$action();
 			$controller->destroy_controller();
-
-			Configure::write('view_path', $view_path."/".$action);			
+			
+			$config = Configure::get_instance();
+			$config->view = $view_path."/".$action;
+			
 		
 		}else{
 			
@@ -165,7 +167,8 @@ class Router {
 		$paths	= array(VALET_APPLICATION_PATH."/controllers/");
 		$found  = false;
 		
-		$plugins = Configure::read('plugins');
+		$config  = Configure::get_instance();		
+		$plugins = $config->plugins;
 		
 		if(isset($plugins['configure']) && is_array($plugins['configure'])){
 			
