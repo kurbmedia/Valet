@@ -15,7 +15,7 @@ class Db extends Phake{
 	 * @return void
 	 **/
 	public function create(){
-		$db_name = PROJECT."_".ENVIRONMENT;
+		$db_name = PROJECT."_".VALET_ENV;
 		$result = $this->input("Create database $db_name? [Y,n]");
 
 		if($result == "Y"){
@@ -54,7 +54,7 @@ class Db extends Phake{
 	 **/
 	public function migrate(){
 		
-		require_once(CONFIG_PATH."/migrations/migration.php");
+		require_once(VALET_CONFIG_PATH."/migrations/migration.php");
 		
 		Loader::load('components/inflector');
 		$db = $this->connect();
@@ -62,7 +62,7 @@ class Db extends Phake{
 		$migrations = glob(VALET_CONFIG_PATH."/migrations/*.php");
 		natsort($migrations);
 		
-		if(!$db) $this->fail('The database: '.PROJECT."_".ENVIRONMENT." does not exist.");
+		if(!$db) $this->fail('The database: '.PROJECT."_".VALET_ENV." does not exist.");
 
 		if(isset($this->flags['v'])){
 			
@@ -276,7 +276,7 @@ class Db extends Phake{
 	 **/
 	private function connect(){
 		if(!$this->initialized) $this->init();
-		return mysql_select_db(PROJECT."_".ENVIRONMENT, $this->db_conn);
+		return mysql_select_db(PROJECT."_".VALET_ENV, $this->db_conn);
 	}
 	
 	/**
@@ -285,13 +285,13 @@ class Db extends Phake{
 	 * @return void
 	 **/
 	private function init(){		
-		$data = parse_ini_file(VALET_BASE_PATH."/config/environments.ini", true);
+		$data = parse_ini_file(VALET_ROOT."/config/environments.ini", true);
 		
-		if(!isset($data['database:'.ENVIRONMENT])){
+		if(!isset($data['database:'.VALET_ENV])){
 			$this->fail("Unable to find database configuration for environment '$env'");
 		}
 		
-		$db = $data['database:'.ENVIRONMENT];
+		$db = $data['database:'.VALET_ENV];
 		$this->db_conn = mysql_connect($db['host'], $db['user'], $db['pass']);
 		
 		if(!$this->db_conn){

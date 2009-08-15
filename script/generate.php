@@ -11,7 +11,7 @@ class Generate extends Phake{
 		$file_name  = array_shift($this->vars);
 		$model_name = Inflector::camelize($file_name);
 		
-		$file 	= APPLICATION_PATH."/models/".$file_name.".php";
+		$file 	= VALET_APPLICATION_PATH."/models/".$file_name.".php";
 		$stream = fopen($file, "w");
 
 		$file_data  = "<?php \n\n";
@@ -30,7 +30,7 @@ class Generate extends Phake{
 		Loader::load('components/inflector');
 		
 		$name 	= strtolower(str_replace(" ","_", $this->vars[0]));
-		$file 	= CONFIG_PATH."/migrations/".date('YmdHis')."_".$name.".php";
+		$file 	= VALET_CONFIG_PATH."/migrations/".date('YmdHis')."_".$name.".php";
 		$stream = fopen($file, "w");
 		$class  = Inflector::camelize($name);
 

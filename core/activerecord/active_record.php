@@ -244,8 +244,8 @@ class ActiveRecord {
 		if(!isset($props['columns']) || empty($props['columns'])){
 			
 			// Read columns from configuration.
-			$config = Configure::read('db_schema');
-			$config = $config[$props['table_name']];
+			$schema = parse_ini_file(VALET_CONFIG_PATH."/shema.ini", true);
+			$config = $schema[$props['table_name']];
 			
 			$columns 	= array();
 			$properties = array(); 
@@ -281,7 +281,7 @@ class ActiveRecord {
 			$database = strtolower(str_replace(" ","_", $database['name']));
 			$database = $database."_".strtolower(Environment::get());
 			
-			self::$dbh = call_user_func_array(array(DB_ADAPTER."Adapter", __FUNCTION__),
+			self::$dbh = call_user_func_array(array(VALET_DB_ADAPTER."Adapter", __FUNCTION__),
 				array($db['host'], $database, $db['user'], $db['pass'], $db_mode));
 		}
 		
@@ -302,17 +302,17 @@ class ActiveRecord {
 		$dbh =& self::get_dbh();
 		#var_dump($query);
 		self::$query_count++;
-		return call_user_func_array(array(DB_ADAPTER."Adapter", __FUNCTION__),array($query, $dbh));
+		return call_user_func_array(array(VALET_DB_ADAPTER."Adapter", __FUNCTION__),array($query, $dbh));
 	}
   
 	private static function quote($string, $type = null){
 		$dbh =& self::get_dbh();
-		return call_user_func_array(array(DB_ADAPTER."Adapter", __FUNCTION__), array($string, $dbh, $type));
+		return call_user_func_array(array(VALET_DB_ADAPTER."Adapter", __FUNCTION__), array($string, $dbh, $type));
 	}
 
 	public static function last_insert_id($resource = null){
 		$dbh =& self::get_dbh();
-		return call_user_func_array(array(DB_ADAPTER."Adapter", __FUNCTION__), array($dbh, $resource));
+		return call_user_func_array(array(VALET_DB_ADAPTER."Adapter", __FUNCTION__), array($dbh, $resource));
 	}
 
 	public function update_attributes($attributes) {

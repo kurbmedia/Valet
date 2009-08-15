@@ -5,11 +5,12 @@ $root_path  = dirname(__FILE__);
 require_once(dirname(__FILE__)."/core/boot.php");
 require_once(VALET_CORE_PATH."/components/loader.php");
 
-$app  = new Application();
-$data = parse_ini_file(dirname(__FILE__)."/config/config.ini", true);
+$app  	= new Application();
+$config = Configure::get_instance(); 
 
-define('PROJECT', strtolower(str_replace(" ","_", $data['project']['name'])));
-define('ENVIRONMENT', 'development');
+include_once(VALET_CONFIG_PATH."/config.php");
+
+define('PROJECT', $config->project['name']);
 
 // Add all desired paths to the task paths array;
 
