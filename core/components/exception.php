@@ -2,27 +2,19 @@
 
 namespace Components;
 
-class ApplicationException extends \Exception{
-	
-	/**
-	 * Constructor
-	 *
-	 * @return void
-	 **/
-	public function __construct($obj){
-		$this->output('Core Error', $obj);
-	}
+class Exception extends \Exception{
 
 	/**
 	 * Output the error message.
 	 *
 	 * @return void
 	 **/
-	protected function output($title, $obj){
+	public static function output($obj){
+		
 		if(VALET_ENV == "production"){
 			@touch(VALET_ROOT."/log/application.log");
 			@chmod(VALET_ROOT."/log/application.log",0777);
-			error_log( $error['title']." [".date('m/d/Y h:i:s a')."]: ".$obj->message." [ ".$obj->file.", line ".$obj->line." ]\n",3, VALET_ROOT."/log/application.log");
+			error_log( $title." [".date('m/d/Y h:i:s a')."]: ".$obj->message." [ ".$obj->file.", line ".$obj->line." ]\n",3, VALET_ROOT."/log/application.log");
 		}else{
 			$message = $this->get_html($error, $obj);
 			parent::__construct($message);

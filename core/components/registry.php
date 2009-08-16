@@ -3,35 +3,43 @@
 namespace Components;
 
 class Registry{
-
+	
 	/**
-	 * Holds all vars.
-	 *
-	 * @var array
-	 **/
-	private $_vars;
-
-	/**
-	 * Holds assigned lambda functions (PHP 5.3)
+	 * Current Controller
 	 *
 	 * @var string
 	 **/
-	private $_functions;
+	public $controller;
 	
 	/**
-	 * Reference
+	 * Current Action
 	 *
-	 * @var object
+	 * @var string
+	 **/
+	public $action;
+	
+	/**
+	 * All active plugins
+	 *
+	 * @var array
+	 **/
+	public $plugins;
+	
+	/**
+	 * Holds self
+	 *
+	 * @var array
 	 **/
 	private static $_instance;
+	
 	
 	/**
 	 * Constructor
 	 *
 	 * @return void
 	 **/
-	function __construct(){		
-		$this->_vars = array();		
+	public function __construct(){
+		$this->plugins = \Configure::instance()->plugins;
 	}
 	
 	/**
@@ -39,33 +47,19 @@ class Registry{
 	 *
 	 * @return void
 	 **/
-	public static function get_instance(){
+	public static function instance(){
 		if(!isset(self::$_instance) || !self::$_instance instanceof Registry) self::$_instance = new Registry;
 		return self::$_instance;
 	}
-
+	
 	/**
-	 * Getter
+	 * Returns the current helper for the action.
 	 *
 	 * @return void
 	 **/
-	function __get($obj){
-		return $this->vars[$obj];
+	public function helper(){
+		return $this->controller."Helper";
 	}
-
-	/**
-	 * Setter
-	 *
-	 * @return void
-	 **/
-	function __set($obj, $val){
-		if(gettype($obj) == "unknown type" || gettype($obj) == "function"){
-			$this->_functions[$obj] = $val;
-			return null;
-		}
-
-		$this->_vars[$obj] = $val;
-	}	
 	
 }
 
