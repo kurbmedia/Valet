@@ -29,14 +29,14 @@ $include_paths = array(
 
 set_include_path( implode( PATH_SEPARATOR, $include_paths ) );
 spl_autoload_extensions(".php");
-spl_autoload_register();
+spl_autoload_register(
+	function($class){
+		require_once(str_replace("\\","/", $class.".php"));
+	}
+);
 
 require_once('router/dispatcher.php');
-
 foreach(glob(VALET_ROOT.'/core/components/*.php') as $file) 	require_once($file);
-foreach(glob(VALET_ROOT.'/core/controller/*.php') as $file) 	require_once($file);
-foreach(glob(VALET_ROOT.'/core/view/*.php') as $file) 			require_once($file);
-foreach(glob(VALET_ROOT.'/core/activerecord/*.php') as $file) 	require_once($file);
 
 set_exception_handler(array('Error','handle'));
 

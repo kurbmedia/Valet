@@ -69,6 +69,10 @@ abstract class Base{
 				settype($this->$filter, 'array');
 
 				foreach($this->$filter as $func){
+					if(!method_exists($this, $func) || !is_callable(array($this, $func))){
+						throw new \Error("Invalid filter name '$func'");
+					}
+					
 					call_user_func(array($this, $func));
 				}
 			}

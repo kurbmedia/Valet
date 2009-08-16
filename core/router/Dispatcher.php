@@ -14,7 +14,7 @@ class Dispatcher {
 	private static $_instance;
 
 	/**
-	 * undocumented function
+	 * Constructor
 	 *
 	 * @return void
 	 **/
