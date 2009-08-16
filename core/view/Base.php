@@ -64,7 +64,7 @@ class Base{
 		}
 		
 		foreach($helper_names as $class){
-		
+
 			$helper = new $class();
 
 			foreach (get_class_methods($helper) as $method) {

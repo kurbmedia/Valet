@@ -1,8 +1,6 @@
 <?php
 
-namespace View;
-
-class AssetTagsHelper extends Helper{
+class AssetTagsHelper extends View\Helper{
 	
 	/**
 	 * Creates an image tag.
