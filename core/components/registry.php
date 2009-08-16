@@ -23,7 +23,7 @@ class Registry{
 	 *
 	 * @var object
 	 **/
-	private static $self;
+	private static $_instance;
 	
 	/**
 	 * Constructor

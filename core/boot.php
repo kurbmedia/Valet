@@ -32,4 +32,6 @@ if(VALET_ENV != "production"){
 	ini_set( 'display_errors', false );
 }
 
+require_once('router/dispatcher.php');
+
 ?>
