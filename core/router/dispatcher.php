@@ -4,6 +4,9 @@ namespace Router;
 
 use Components;
 
+require_once('authenticator.php');
+require_once('route.php');
+
 class Dispatcher {
 	
 	/**

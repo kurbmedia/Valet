@@ -2,7 +2,7 @@
 
 use Router;
 
-$map = Mapper::get_instance();
+$map = Mapper::instance();
 
 
 // Connect all custom routes.
