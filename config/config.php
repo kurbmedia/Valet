@@ -1,5 +1,7 @@
 <?php
 
+$config = Configure::instance();
+
 $config->project = array(
 	'name'			=> 'Valet',
 	'description'	=> 'Valet sample framework setup.'	

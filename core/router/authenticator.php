@@ -66,7 +66,7 @@ class Authenticator{
 	
 	public static function validate($request){
 
-		$config  = Configure::get_instance();		
+		$config  = \Configure::instance();		
 		$data	 = $config->authentication;
 		
 		if(empty($data)) return null;

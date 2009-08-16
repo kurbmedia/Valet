@@ -4,9 +4,6 @@ namespace Router;
 
 use Components;
 
-require_once('authenticator.php');
-require_once('route.php');
-
 class Dispatcher {
 	
 	/**
@@ -17,12 +14,26 @@ class Dispatcher {
 	private static $_instance;
 
 	/**
+	 * undocumented function
+	 *
+	 * @return void
+	 **/
+	public function __construct(){
+		
+		require_once('authenticator.php');
+		require_once('route.php');
+		require_once('mapper.php');
+		
+		include_once(VALET_ROOT.'/config/routes.php');
+	}
+
+	/**
 	 * Get the instance
 	 *
 	 * @return void
 	 **/
 	public static function instance(){
-		if(!isset(self::$_instance) || !self::$_instance instanceof Dispatcher) self::$_instance = new Dispatcher;
+		if(!isset(self::$_instance) || !self::$_instance instanceof Dispatcher) self::$_instance = new Dispatcher();
 		return self::$_instance;
 	}
 		
@@ -41,10 +52,10 @@ class Dispatcher {
 		$authenticator = Authenticator::instance();
 		$authenticator->validate($path);
 		
-		$mapper	= Mapper::get_instance();
+		$mapper	= Mapper::instance();
 		$route  = $mapper->find_route($path);
 		
-		if(isset($route) && $route instanceof Route){	
+		if(isset($route)){	
 			$this->_connect($route->controller, $route->action, $route->params);
 		}else{
 			$this->_default($path);
@@ -62,20 +73,19 @@ class Dispatcher {
 		$parts 		= explode("/", $class_path);
 		$controller = array_pop($parts); 
 
-		$view_path  = array_slice($parts, array_search("controllers", $parts) + 1);
-		array_push($view_path, $controller);
-		
-		$view_path = implode("/", $view_path);
+		Components\Registry::instance()->controller = $controller;
+		Components\Registry::instance()->action = $action;
 				
 		$file_path  = $class_path."_controller.php";
 
-		$class = Inflector::camelize($controller."_controller");
+		$class = \Inflector::camelize($controller."_controller");
+		require_once('application_controller.php');
 
 		try{
 			require_once($file_path);
 		}
-		catch(Exception $e){
-			throw new Error("The controller '$controller' could not be loaded.");
+		catch(\Error $e){
+			throw new \Error("The controller '$controller' could not be loaded.");
 		}
 		
 		
@@ -84,7 +94,7 @@ class Dispatcher {
 		if(!isset($action) || empty($action)) $action = "index";
 		
 		if(!method_exists($controller, $action)){
-			throw new Error("Method '$action' does not exist on $class.");
+			throw new \Error("Method '$action' does not exist on $class.");
 			return;
 		}
 		
@@ -94,8 +104,6 @@ class Dispatcher {
 		$controller->$action();
 		$controller->destroy_controller();
 		
-		$config = Configure::get_instance();
-		$config->view = $view_path."/".$action;	
 	}
 	
 	
@@ -107,22 +115,21 @@ class Dispatcher {
 	private function _default($route){
 
 		$parts  = explode("/", $route);
-		$paths	= array(VALET_APPLICATION_PATH."/controllers/");
+		$paths	= array(VALET_ROOT."/app/controllers/");
 		$found  = false;
+	
+		$plugins = Components\Registry::instance()->plugins;
 		
-		$config  = Configure::get_instance();		
-		$plugins = $config->plugins;
-		
-		if(isset($plugins['configure']) && is_array($plugins['configure'])){
+		if(isset($plugins) && is_array($plugins)){
 			
-			foreach($plugins['configure'] as $plugin){
+			foreach($plugins as $plugin){
 				
-				$plugin_path = VALET_PLUGIN_PATH."/".$plugin."/app/controllers";
+				$plugin_path = VALET_ROOT."/vendor/plugins/".$plugin."/app/controllers";
 
 				if(is_dir($plugin_path)){
 					array_push($paths, $plugin_path."/");
 				}else{
-					throw new Error("The plugin '$plugin' was not found.");
+					throw new \Error("The plugin '$plugin' was not found.");
 				}
 			}
 		}
@@ -134,13 +141,13 @@ class Dispatcher {
 			$namespaced = false;
 			
 			foreach($parts as $part){
-
+				
 				if(is_dir($path.$part)){
 					$path 		= $path.$part."/";
 					$namespaced = true;
 					continue;
 				}
-			
+				
 				if(is_file($path.$part."_controller.php")){
 					$path  = $path.$part;
 					$found = true;
@@ -168,7 +175,7 @@ class Dispatcher {
 		
 		
 		if($found == false){
-			throw new Error("No controller found for the url '$route'");
+			throw new \Error("No controller found for the url '$route'");
 		}
 		
 		array_shift($parts);

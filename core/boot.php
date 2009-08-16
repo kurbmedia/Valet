@@ -27,14 +27,31 @@ $include_paths = array(
     get_include_path()
 );
 
-require_once('router/dispatcher.php');
-require_once('components/inflector.php');
-require_once('components/exception.php');
-
 set_include_path( implode( PATH_SEPARATOR, $include_paths ) );
 spl_autoload_extensions(".php");
-
 spl_autoload_register();
 
+set_exception_handler(array('Error','handle'));
+
+require_once('router/dispatcher.php');
+
+foreach(glob(VALET_ROOT.'/core/components/*.php') as $file) 	require_once($file);
+foreach(glob(VALET_ROOT.'/core/controller/*.php') as $file) 	require_once($file);
+foreach(glob(VALET_ROOT.'/core/activerecord/*.php') as $file) 	require_once($file);
+
+
+ActiveRecord\Config::initialize(
+	
+	function($config){
+		$data = parse_ini_file(VALET_ROOT."/config/database.ini", true);
+		$data = $data[VALET_ENV];
+		
+		extract($data);
+    	$config->set_connections( array( VALET_ENV => "mysql://$user:$pass@$host/".strtolower(PROJECT_NAME)."_".VALET_ENV) );
+	}
+);
+
+
+include_once(VALET_ROOT."/config/config.php");
 
 ?>

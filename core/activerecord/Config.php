@@ -5,6 +5,8 @@
 namespace ActiveRecord;
 use Closure;
 
+require_once('Singleton.php');
+
 /**
  * Manages configuration options for ActiveRecord.
  *

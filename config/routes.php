@@ -1,8 +1,6 @@
 <?php
 
-use Router;
-
-$map = Mapper::instance();
+$map = Router\Mapper::instance();
 
 
 // Connect all custom routes.
