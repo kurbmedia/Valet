@@ -83,11 +83,10 @@ class Dispatcher {
 
 		$class = \Inflector::camelize($controller."_controller");
 		require_once('application_controller.php');
-
-		try{
-			require_once($file_path);
-		}
-		catch(\Error $e){
+		
+		if($this->_find_controller($file_path)){
+			include_once($file_path);
+		}else{
 			throw new \Error("The controller '$controller' could not be loaded.");
 		}
 		
@@ -113,7 +112,12 @@ class Dispatcher {
 	 * @return void
 	 **/
 	private function _default($route){
-
+		
+		if(empty($route) || $route == "/"){
+			$this->_connect("index", "index", array());
+			return;
+		}
+		
 		$parts  = explode("/", $route);
 		$paths	= array(VALET_ROOT."/app/controllers/");
 		$found  = false;
@@ -134,7 +138,7 @@ class Dispatcher {
 			}
 		}
 		
-		$class_path = "";
+		$class_path = array();
 		
 		foreach($paths as $path){			
 
@@ -143,27 +147,27 @@ class Dispatcher {
 			foreach($parts as $part){
 				
 				if(is_dir($path.$part)){
-					$path 		= $path.$part."/";
-					$namespaced = true;
+					$path 			= $path.$part."/";
+					$class_path[]	= $part;
+					$namespaced 	= true;
 					continue;
 				}
 				
 				if(is_file($path.$part."_controller.php")){
-					$path  = $path.$part;
-					$found = true;
+					$path  		  = $path.$part;
+					$class_path[] = $part;
+					$found 		  = true;
 					break;
 				}
 				
 				break;							
-			}
-			
-			$class_path = $path;			
+			}		
 
 			if($found == true){
 				break;
 			}else{
 				
-				if($namespaced == true && file_exists($class_path."index_controller.php")){
+				if($namespaced == true && file_exists(implode("/", $class_path)."index_controller.php")){
 					$found = true;
 					$class_path .= "index";
 				}else{
@@ -179,9 +183,19 @@ class Dispatcher {
 		}
 		
 		array_shift($parts);
-		$this->_connect($class_path, array_shift($parts), $parts);
+		$this->_connect(implode("/", $class_path), array_shift($parts), $parts);
 		
 						
 	}
+	
+	
+	private function _find_controller($controller){
+		foreach(explode(PATH_SEPARATOR, get_include_path()) as $path){
+			if(file_exists($path."/".$controller)) return true;
+		}
+		
+		return false;
+	}
+	
 }
 

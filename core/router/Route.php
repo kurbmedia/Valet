@@ -74,7 +74,7 @@ class Route{
 
 			}elseif(substr($part, 0,1) == ":"){
 
-				$params[substr($part, 1)] = $url_array[$counter];					
+				if(isset($url_array[$counter])) $params[substr($part, 1)] = $url_array[$counter];					
 
 			}elseif ($part != $url_array[$counter] && str_replace("-","_", $part) != $url_array[$counter]) {
 
