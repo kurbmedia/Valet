@@ -72,9 +72,12 @@ class Dispatcher {
 
 		$parts 		= explode("/", $class_path);
 		$controller = array_pop($parts); 
-
+		
+		if(!isset($action) || empty($action)) $action = "index";
+		
 		Components\Registry::instance()->controller = $controller;
 		Components\Registry::instance()->action = $action;
+		Components\Registry::instance()->view = $controller."/".$action;
 				
 		$file_path  = $class_path."_controller.php";
 
@@ -90,8 +93,6 @@ class Dispatcher {
 		
 		
 		$controller = new $class();
-			
-		if(!isset($action) || empty($action)) $action = "index";
 		
 		if(!method_exists($controller, $action)){
 			throw new \Error("Method '$action' does not exist on $class.");
@@ -99,10 +100,9 @@ class Dispatcher {
 		}
 		
 		$controller->params = &$parameters;
-		$controller->build_controller();
-		
 		$controller->$action();
-		$controller->destroy_controller();
+		
+		\View\Base::instance()->render();
 		
 	}
 	

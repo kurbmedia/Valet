@@ -1,6 +1,6 @@
 <?php
 
-if(!defined(VALET_ENV)){
+if(!defined('VALET_ENV')){
 	define('VALET_ENV', isset($_SERVER['VALET_ENV']) ? $_SERVER['VALET_ENV'] : 'development');
 }
 
@@ -35,6 +35,7 @@ require_once('router/dispatcher.php');
 
 foreach(glob(VALET_ROOT.'/core/components/*.php') as $file) 	require_once($file);
 foreach(glob(VALET_ROOT.'/core/controller/*.php') as $file) 	require_once($file);
+foreach(glob(VALET_ROOT.'/core/view/*.php') as $file) 			require_once($file);
 foreach(glob(VALET_ROOT.'/core/activerecord/*.php') as $file) 	require_once($file);
 
 set_exception_handler(array('Error','handle'));
@@ -49,7 +50,6 @@ ActiveRecord\Config::initialize(
     	$config->set_connections( array( VALET_ENV => "mysql://$user:$pass@$host/".strtolower(PROJECT_NAME)."_".VALET_ENV) );
 	}
 );
-
 
 include_once(VALET_ROOT."/config/config.php");
 

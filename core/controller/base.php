@@ -47,6 +47,15 @@ abstract class Base{
 		}
 	}	
 	
+	/**
+	 * Set a view variable
+	 *
+	 * @return void
+	 **/
+	protected final function set($k, $v){
+		Components\Registry::instance()->assign_to_view($k, $v);
+	}
+	
 	// PRIVATE 
 	
 	private function _run_filters($type = array()){
