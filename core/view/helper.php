@@ -1,13 +1,8 @@
 <?php
 
-/**
- * Helper base.
- *
- * @package default
- * @author Brent Kirby
- **/
+namespace View;
 
-class HelperBase{
+class Helper{
 	
 	/**
 	 * Holds all open html tags.
@@ -22,7 +17,7 @@ class HelperBase{
 	 * @return void
 	 **/
 	public function __call($name, $args){
-		throw new Error("Invalid helper method '$name'");
+		throw new Exception("Invalid helper method '$name'");
 	}
 	
 	/**

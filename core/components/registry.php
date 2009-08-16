@@ -1,12 +1,8 @@
-<?php 
+<?php
 
-/**
- * Standard Object class.
- *
- * @package valet.core.components
- * @author Brent Kirby
- **/
-class Object{
+namespace Components;
+
+class Registry{
 
 	/**
 	 * Holds all vars.
@@ -14,13 +10,20 @@ class Object{
 	 * @var array
 	 **/
 	private $_vars;
-	
+
 	/**
 	 * Holds assigned lambda functions (PHP 5.3)
 	 *
 	 * @var string
 	 **/
 	private $_functions;
+	
+	/**
+	 * Reference
+	 *
+	 * @var object
+	 **/
+	private static $self;
 	
 	/**
 	 * Constructor
@@ -32,6 +35,16 @@ class Object{
 	}
 	
 	/**
+	 * Get the instance
+	 *
+	 * @return void
+	 **/
+	public static function get_instance(){
+		if(!isset(self::$_instance) || !self::$_instance instanceof Registry) self::$_instance = new Registry;
+		return self::$_instance;
+	}
+
+	/**
 	 * Getter
 	 *
 	 * @return void
@@ -39,7 +52,7 @@ class Object{
 	function __get($obj){
 		return $this->vars[$obj];
 	}
-	
+
 	/**
 	 * Setter
 	 *
@@ -50,12 +63,11 @@ class Object{
 			$this->_functions[$obj] = $val;
 			return null;
 		}
-		
+
 		$this->_vars[$obj] = $val;
-	}
+	}	
+	
+}
 
-
-} // END class 
- 
 
 ?>

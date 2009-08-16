@@ -1,7 +1,7 @@
 <?php
 
 
-abstract class ControllerBase extends Controller{
+abstract class ApplicationController extends Controller\Base{
 	
 	/*
 	

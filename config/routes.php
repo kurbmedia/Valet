@@ -1,6 +1,8 @@
 <?php
 
-$map = RouteMapper::get_instance();
+use Router;
+
+$map = Mapper::get_instance();
 
 
 // Connect all custom routes.
