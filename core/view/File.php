@@ -83,6 +83,8 @@ class File{
 	 * @return mixed
 	 **/
 	public function __get($k){
+		
+		if($k == "flash") return \Controller\Flash::instance();
 
 		if(isset($this->_vars[$k])){
 			return $this->_vars[$k];

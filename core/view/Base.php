@@ -75,12 +75,28 @@ class Base{
 		}
 		
 		
+		if(!$this->_find_view($registry->view)){
+			throw new \Error("The view '".$registry->view."' could not be found.");
+		}
+		
 		$file = new File($registry->view.".phtml", $vars, $helper_classes);
 		print $file;
 		
 	}
 	
 	
+	/**
+	 * See if our view exists.
+	 *
+	 * @return boolean
+	 **/
+	private function _find_view($view){
+		foreach(explode(PATH_SEPARATOR, get_include_path()) as $path){
+			if(file_exists($path."/".$view.".phtml")) return true;
+		}
+		
+		return false;
+	}
 	
 	
 }

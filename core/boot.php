@@ -31,11 +31,15 @@ set_include_path( implode( PATH_SEPARATOR, $include_paths ) );
 spl_autoload_extensions(".php");
 spl_autoload_register(
 	function($class){
-		require_once(str_replace("\\","/", $class.".php"));
+		$filename = str_replace("\\","/", $class).".php";
+		$parts = explode("/", $filename);
+		$file = array_pop($parts);
+		$filename = strtolower(implode("/", $parts))."/".$file;
+		require_once($filename);
 	}
 );
 
-require_once('router/dispatcher.php');
+
 foreach(glob(VALET_ROOT.'/core/components/*.php') as $file) 	require_once($file);
 
 set_exception_handler(array('Error','handle'));

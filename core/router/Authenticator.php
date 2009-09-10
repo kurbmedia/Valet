@@ -90,7 +90,7 @@ class Authenticator{
 					
 					if($pass == false){
 						if(!preg_match('@'.$request.'/?@i', $redirect)){
-							Flash::error('You must be logged in to access this page.');
+							\Controller\Flash::instance()->error('You must be logged in to access this page.');
 							Application::redirect($redirect);
 							break;
 						}
@@ -104,7 +104,7 @@ class Authenticator{
 					if(self::get() != $valid_user){	// If user isn't allowed, redirect.
 
 						if(!preg_match('@'.$request.'/?@i', $redirect)){
-							Flash::error('You must be logged in to access this page.');
+							\Controller\Flash::instance()->error('You must be logged in to access this page.');
 							header('HTTP/1.0 401 Unauthorized');
 							header("Location:".$redirect);							
 							exit();

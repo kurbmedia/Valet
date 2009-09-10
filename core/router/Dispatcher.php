@@ -20,9 +20,9 @@ class Dispatcher {
 	 **/
 	public function __construct(){
 		
-		require_once('authenticator.php');
-		require_once('route.php');
-		require_once('mapper.php');
+		require_once('Authenticator.php');
+		require_once('Route.php');
+		require_once('Mapper.php');
 		
 		include_once(VALET_ROOT.'/config/routes.php');
 	}
@@ -77,7 +77,7 @@ class Dispatcher {
 		
 		Components\Registry::instance()->controller = $controller;
 		Components\Registry::instance()->action = $action;
-		Components\Registry::instance()->view = $controller."/".$action;
+		Components\Registry::instance()->view = $class_path."/".$action;
 				
 		$file_path  = $class_path."_controller.php";
 
@@ -87,7 +87,7 @@ class Dispatcher {
 		if($this->_find_controller($file_path)){
 			include_once($file_path);
 		}else{
-			throw new \Error("The controller '$controller' could not be loaded.");
+			throw new \Error("No controller found for path.");
 		}
 		
 		
@@ -167,9 +167,9 @@ class Dispatcher {
 				break;
 			}else{
 				
-				if($namespaced == true && file_exists(implode("/", $class_path)."index_controller.php")){
+				if($namespaced == true && $this->_find_controller(implode("/", $class_path)."/index_controller.php")){
 					$found = true;
-					$class_path .= "index";
+					$class_path[] = "index";
 				}else{
 					continue;
 				}
@@ -179,12 +179,11 @@ class Dispatcher {
 		
 		
 		if($found == false){
-			throw new \Error("No controller found for the url '$route'");
-		}
-		
-		array_shift($parts);
-		$this->_connect(implode("/", $class_path), array_shift($parts), $parts);
-		
+			$this->_connect('index', array_shift($parts), $parts);			
+		}else{
+			array_shift($parts);
+			$this->_connect(implode("/", $class_path), array_shift($parts), $parts);
+		}		
 						
 	}
 	

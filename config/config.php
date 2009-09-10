@@ -4,7 +4,7 @@ $config = Configure::instance();
 
 $config->project = array(
 	'name'			=> 'Valet',
-	'description'	=> 'Valet sample framework setup.'	
+	'description'	=> 'Valet framework sample site.'	
 );
 
 
@@ -15,7 +15,7 @@ $config->options = array(
 
 
 $config->authentication = array(	
-	'admin/?(.*)?'	=> array('allow' => 'user_type', 'on_fail' => '/')	
+	'admin/?(.*)?'	=> array('allow' => 'admin', 'on_fail' => '/')	
 );
 
 

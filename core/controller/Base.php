@@ -1,10 +1,16 @@
 <?php
 
 namespace Controller;
-
+use Closure;
 
 abstract class Base{
 	
+	/**
+	 * Access the flash class.
+	 *
+	 * @var object
+	 **/
+	protected $flash;
 
 	/**
 	 * Builds the controller
@@ -12,6 +18,7 @@ abstract class Base{
 	 * @return void
 	 **/
 	public final function __construct(){
+		$this->flash = Flash::instance();
 		$this->_run_filters(array('before','around'));
 	}
 	
@@ -39,12 +46,11 @@ abstract class Base{
 	 *
 	 * @return void
 	 **/
-	protected final function respond_to($request_type, $func){
-		if(is_string($func)){
-			call_user_func(array($this, $func));
-		}else{
-			$func();
-		}
+	protected final function respond_to(Closure $func){
+		
+		$request_type = "html";
+		
+		$func($request_type);
 	}	
 	
 	/**
